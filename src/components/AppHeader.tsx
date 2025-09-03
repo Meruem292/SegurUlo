@@ -64,7 +64,6 @@ export function AppHeader() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src="https://picsum.photos/40/40" />
                     <AvatarFallback>U</AvatarFallback>
                   </Avatar>
                 </Button>

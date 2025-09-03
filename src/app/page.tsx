@@ -150,7 +150,6 @@ export default function Home() {
                   </p>
                   <div className="mt-4 flex items-center gap-4">
                     <Avatar>
-                      <AvatarImage src="https://picsum.photos/40/40?random=1" />
                       <AvatarFallback>JD</AvatarFallback>
                     </Avatar>
                     <div>
@@ -178,7 +177,6 @@ export default function Home() {
                   </p>
                   <div className="mt-4 flex items-center gap-4">
                     <Avatar>
-                      <AvatarImage src="https://picsum.photos/40/40?random=2" />
                       <AvatarFallback>MS</AvatarFallback>
                     </Avatar>
                     <div>
@@ -206,7 +204,6 @@ export default function Home() {
                   </p>
                   <div className="mt-4 flex items-center gap-4">
                     <Avatar>
-                      <AvatarImage src="https://picsum.photos/40/40?random=3" />
                       <AvatarFallback>CF</AvatarFallback>
                     </Avatar>
                     <div>
