@@ -1,3 +1,6 @@
+
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -8,47 +11,78 @@ import {
   Zap,
   Cog,
 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Logo } from '@/components/icons';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
+import { cn } from '@/lib/utils';
+
+function LandingPageHeader() {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  return (
+    <header className={cn("fixed top-0 left-0 right-0 z-50 transition-all duration-300", 
+        isScrolled ? 'bg-background/80 backdrop-blur-sm shadow-md' : 'bg-transparent'
+    )}>
+        <div className="container mx-auto flex h-20 items-center justify-between px-4 md:px-6">
+            <Link href="#" className="flex items-center gap-2" prefetch={false}>
+              <Logo className="h-8 w-8" />
+              <span className={cn("text-xl font-bold", isScrolled ? 'text-foreground' : 'text-white')}>SegurUlo</span>
+            </Link>
+            <nav className="hidden items-center gap-6 md:flex">
+              <Link
+                href="#features"
+                className={cn("text-sm font-medium hover:underline transition-colors", isScrolled ? 'text-foreground' : 'text-white')}
+                prefetch={false}
+              >
+                Features
+              </Link>
+              <Link
+                href="#testimonials"
+                className={cn("text-sm font-medium hover:underline transition-colors", isScrolled ? 'text-foreground' : 'text-white')}
+                prefetch={false}
+              >
+                Testimonials
+              </Link>
+            </nav>
+            <div className="flex items-center gap-4">
+              <ThemeSwitcher />
+              <Button variant="outline" className={cn(isScrolled ? '' : 'bg-transparent text-white hover:bg-white hover:text-black')} asChild>
+                <Link href="/login">Log In</Link>
+              </Button>
+              <Button asChild className="bg-white text-black hover:bg-white/90">
+                <Link href="/signup">Sign Up</Link>
+              </Button>
+            </div>
+        </div>
+    </header>
+  );
+}
+
 
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="container fixed top-0 left-1/2 -translate-x-1/2 z-50 mx-auto flex h-20 items-center justify-between px-4 md:px-6 text-white">
-        <Link href="#" className="flex items-center gap-2" prefetch={false}>
-          <Logo className="h-8 w-8" />
-          <span className="text-xl font-bold">SegurUlo</span>
-        </Link>
-        <nav className="hidden items-center gap-6 md:flex">
-          <Link
-            href="#features"
-            className="text-sm font-medium hover:underline transition-colors"
-            prefetch={false}
-          >
-            Features
-          </Link>
-          <Link
-            href="#testimonials"
-            className="text-sm font-medium hover:underline transition-colors"
-            prefetch={false}
-          >
-            Testimonials
-          </Link>
-        </nav>
-        <div className="flex items-center gap-4">
-          <ThemeSwitcher />
-          <Button variant="outline" className="bg-transparent text-white hover:bg-white hover:text-black" asChild>
-            <Link href="/login">Log In</Link>
-          </Button>
-          <Button asChild className="bg-white text-black hover:bg-white/90">
-            <Link href="/signup">Sign Up</Link>
-          </Button>
-        </div>
-      </header>
+      <LandingPageHeader />
       <main className="flex-1">
         <section className="relative h-[80vh] w-full flex items-center justify-center">
           <Image
