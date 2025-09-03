@@ -18,7 +18,7 @@ import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="container mx-auto flex h-20 items-center justify-between px-4 md:px-6">
+      <header className="container fixed top-0 left-1/2 -translate-x-1/2 z-50 mx-auto flex h-20 items-center justify-between px-4 md:px-6 text-white">
         <Link href="#" className="flex items-center gap-2" prefetch={false}>
           <Logo className="h-8 w-8" />
           <span className="text-xl font-bold">SegurUlo</span>
@@ -26,14 +26,14 @@ export default function Home() {
         <nav className="hidden items-center gap-6 md:flex">
           <Link
             href="#features"
-            className="text-sm font-medium hover:text-primary transition-colors"
+            className="text-sm font-medium hover:underline transition-colors"
             prefetch={false}
           >
             Features
           </Link>
           <Link
             href="#testimonials"
-            className="text-sm font-medium hover:text-primary transition-colors"
+            className="text-sm font-medium hover:underline transition-colors"
             prefetch={false}
           >
             Testimonials
@@ -41,42 +41,42 @@ export default function Home() {
         </nav>
         <div className="flex items-center gap-4">
           <ThemeSwitcher />
-          <Button variant="ghost" asChild>
+          <Button variant="outline" className="bg-transparent text-white hover:bg-white hover:text-black" asChild>
             <Link href="/login">Log In</Link>
           </Button>
-          <Button asChild>
+          <Button asChild className="bg-white text-black hover:bg-white/90">
             <Link href="/signup">Sign Up</Link>
           </Button>
         </div>
       </header>
       <main className="flex-1">
-        <section className="container mx-auto px-4 py-20 text-center md:px-6 lg:py-32">
-          <div className="mx-auto max-w-3xl">
-            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
-              Protect Your Journey, Connect Your World
-            </h1>
-            <p className="mt-4 text-lg text-muted-foreground md:text-xl">
-              SegurUlo is the smart helmet that keeps you safe and connected on
-              every ride. Experience the future of cycling safety.
-            </p>
-            <div className="mt-8 flex justify-center gap-4">
-              <Button size="lg" asChild>
-                <Link href="/signup">Get Started</Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link href="#features">Learn More</Link>
-              </Button>
-            </div>
-          </div>
-          <div className="mt-12 flex justify-center">
-            <Image
-              src="https://picsum.photos/600/400"
-              width="600"
-              height="400"
-              alt="SegurUlo Smart Helmet"
-              data-ai-hint="cycling helmet"
-              className="rounded-2xl shadow-2xl"
-            />
+        <section className="relative h-[80vh] w-full flex items-center justify-center">
+          <Image
+            src="https://picsum.photos/1920/1080"
+            alt="SegurUlo Smart Helmet"
+            fill
+            style={{ objectFit: 'cover' }}
+            className="-z-10 brightness-50"
+            data-ai-hint="cycling helmet night"
+          />
+          <div className="container mx-auto px-4 text-center text-white md:px-6">
+              <div className="mx-auto max-w-3xl">
+                <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
+                  Protect Your Journey, Connect Your World
+                </h1>
+                <p className="mt-4 text-lg text-neutral-200 md:text-xl">
+                  SegurUlo is the smart helmet that keeps you safe and connected on
+                  every ride. Experience the future of cycling safety.
+                </p>
+                <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4">
+                  <Button size="lg" asChild className="bg-white text-black hover:bg-white/90">
+                    <Link href="/signup">Get Started</Link>
+                  </Button>
+                  <Button size="lg" variant="outline" asChild className="bg-transparent text-white hover:bg-white hover:text-black">
+                    <Link href="#features">Learn More</Link>
+                  </Button>
+                </div>
+              </div>
           </div>
         </section>
         <section id="features" className="bg-muted/30 py-20 md:py-32">

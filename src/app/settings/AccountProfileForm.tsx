@@ -24,6 +24,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import { User, updateEmail, updatePassword, updateProfile } from 'firebase/auth';
 
 const formSchema = z
   .object({
@@ -44,10 +45,7 @@ const formSchema = z
 type ProfileFormValues = z.infer<typeof formSchema>;
 
 interface AccountProfileFormProps {
-    user: {
-        name: string;
-        email: string;
-    }
+    user: User;
 }
 
 export default function AccountProfileForm({ user }: AccountProfileFormProps) {
@@ -55,7 +53,7 @@ export default function AccountProfileForm({ user }: AccountProfileFormProps) {
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: user.name || '',
+      name: user.displayName || '',
       email: user.email || '',
       password: '',
       confirmPassword: '',
@@ -65,28 +63,41 @@ export default function AccountProfileForm({ user }: AccountProfileFormProps) {
   const { isSubmitting } = form.formState;
 
   const onSubmit = async (data: ProfileFormValues) => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+        if(data.name && data.name !== user.displayName) {
+            await updateProfile(user, { displayName: data.name });
+        }
+        if(data.email && data.email !== user.email) {
+            await updateEmail(user, data.email);
+        }
+        if (data.password) {
+            await updatePassword(user, data.password);
+        }
+        toast({
+            title: 'Profile Updated',
+            description: 'Your account information has been successfully updated.',
+        });
+        form.reset({
+            ...data,
+            password: '',
+            confirmPassword: ''
+        });
 
-    toast({
-      title: 'Profile Updated',
-      description: 'Your account information has been successfully updated.',
-    });
-
-    form.reset({
-        ...data,
-        password: '',
-        confirmPassword: ''
-    });
-
+    } catch (error: any) {
+        toast({
+            title: 'Error updating profile',
+            description: error.message,
+            variant: 'destructive'
+        });
+    }
   };
 
   return (
     <Card className="rounded-2xl shadow-lg">
       <CardHeader>
-        <CardTitle>Profile</CardTitle>
+        <CardTitle>My Profile</CardTitle>
         <CardDescription>
-          This is how others will see you on the site.
+          Update your account information here.
         </CardDescription>
       </CardHeader>
       <Form {...form}>
@@ -125,7 +136,7 @@ export default function AccountProfileForm({ user }: AccountProfileFormProps) {
                 <FormItem>
                   <FormLabel>New Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="New password" {...field} />
+                    <Input type="password" placeholder="New password (leave blank to keep current)" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

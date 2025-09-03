@@ -44,6 +44,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import PersonalizationForm from '../settings/PersonalizationForm';
 
 interface Contact {
   id: number;
@@ -266,12 +267,15 @@ export default function DashboardPage() {
         <div className="container mx-auto max-w-7xl">
           <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <HelmetStatus />
-              <EmergencyAlert />
+            <div className="lg:col-span-2 grid grid-cols-1 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <HelmetStatus />
+                <EmergencyAlert />
+              </div>
+              <PersonalizationForm />
             </div>
-            <div className="lg:row-span-2">
-              <EmergencyContacts />
+            <div className="row-span-2">
+                <EmergencyContacts />
             </div>
           </div>
         </div>

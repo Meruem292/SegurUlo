@@ -16,9 +16,12 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "@/lib/firebase";
 
 export function AppHeader() {
   const pathname = usePathname();
+  const [user] = useAuthState(auth);
 
   const navLinks = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -66,12 +69,14 @@ export function AppHeader() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <Avatar className="h-8 w-8">
-                    <AvatarFallback>U</AvatarFallback>
+                     <AvatarImage src={user?.photoURL ?? undefined} />
+                    <AvatarFallback>{user?.displayName?.charAt(0) ?? 'U'}</AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuLabel>{user?.displayName ?? 'My Account'}</DropdownMenuLabel>
+                 <DropdownMenuLabel className="font-normal text-xs text-muted-foreground">{user?.email}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <Link href="/dashboard">
@@ -86,11 +91,9 @@ export function AppHeader() {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/">
+                <DropdownMenuItem onClick={() => auth.signOut()}>
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
-                  </Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
