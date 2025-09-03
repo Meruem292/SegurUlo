@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/icons";
 import { cn } from "@/lib/utils";
+import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 
 export function AppHeader() {
   const pathname = usePathname();
@@ -50,6 +51,7 @@ export function AppHeader() {
           </nav>
         </div>
         <div className="flex items-center gap-4">
+            <ThemeSwitcher />
             <nav className="flex md:hidden items-center gap-2">
                  {navLinks.map((link) => (
                     <Button key={link.href} variant={pathname === link.href ? "secondary" : "ghost"} size="icon" asChild>

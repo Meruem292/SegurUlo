@@ -93,13 +93,13 @@ function EmergencyContacts() {
   };
 
   return (
-    <Card className="rounded-2xl shadow-lg h-full bg-green-900/20 border-green-500/30">
+    <Card className="rounded-2xl shadow-lg h-full border-green-500/30">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-green-400">
+        <CardTitle className="flex items-center gap-2 text-green-500">
           <Heart className="h-5 w-5" />
           Emergency Contacts
         </CardTitle>
-        <CardDescription className="text-green-400/70">
+        <CardDescription>
           These contacts will be notified in an emergency.
         </CardDescription>
       </CardHeader>
@@ -109,24 +109,24 @@ function EmergencyContacts() {
             contacts.map((contact) => (
               <div
                 key={contact.id}
-                className="flex items-center justify-between rounded-lg bg-black/20 p-3"
+                className="flex items-center justify-between rounded-lg bg-muted p-3"
               >
                 <div>
-                  <p className="font-medium text-green-300">{contact.name}</p>
-                  <p className="text-sm text-green-400/70">{contact.phone}</p>
+                  <p className="font-medium">{contact.name}</p>
+                  <p className="text-sm text-muted-foreground">{contact.phone}</p>
                 </div>
-                <Button variant="ghost" size="icon" onClick={() => handleRemoveContact(contact.id)} className="text-green-400 hover:bg-black/30 hover:text-green-300">
+                <Button variant="ghost" size="icon" onClick={() => handleRemoveContact(contact.id)} className="text-muted-foreground hover:bg-muted/80 hover:text-foreground">
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
             ))
           ) : (
-            <p className="text-center text-green-400/70 py-4">No contacts added yet.</p>
+            <p className="text-center text-muted-foreground py-4">No contacts added yet.</p>
           )}
         </div>
         <Dialog open={isAddDialogOpen} onOpenChange={setAddDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="mt-6 w-full bg-green-500/80 text-white hover:bg-green-500">
+            <Button className="mt-6 w-full bg-green-500 text-white hover:bg-green-500/90">
               <PlusCircle className="mr-2 h-4 w-4" />
               Add Contact
             </Button>
@@ -176,11 +176,11 @@ function HelmetStatus() {
 
   return (
     <Card className={cn("rounded-2xl shadow-lg transition-colors duration-500", 
-        isConnected ? 'bg-blue-900/20 border-blue-500/30' : 'bg-orange-900/20 border-orange-500/30'
+        isConnected ? 'border-blue-500/30' : 'border-orange-500/30'
     )}>
       <CardHeader>
         <CardTitle className={cn("flex items-center gap-2 transition-colors duration-500",
-            isConnected ? 'text-blue-400' : 'text-orange-400'
+            isConnected ? 'text-blue-500' : 'text-orange-500'
         )}>
           <Shield className="h-5 w-5" />
           Helmet Status
@@ -189,15 +189,15 @@ function HelmetStatus() {
       <CardContent className="flex items-center justify-center gap-4 p-8">
         {isConnected ? (
           <>
-            <Wifi className="h-8 w-8 text-blue-400" />
-            <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/50 hover:bg-blue-500/30">
+            <Wifi className="h-8 w-8 text-blue-500" />
+            <Badge variant="outline" className="border-blue-500/50 text-blue-500">
               Connected
             </Badge>
           </>
         ) : (
           <>
-            <WifiOff className="h-8 w-8 text-orange-400" />
-            <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/50 hover:bg-orange-500/30">
+            <WifiOff className="h-8 w-8 text-orange-500" />
+            <Badge variant="outline" className="border-orange-500/50 text-orange-500">
                 Disconnected
             </Badge>
           </>
@@ -219,21 +219,21 @@ function EmergencyAlert() {
   };
 
   return (
-    <Card className="rounded-2xl shadow-lg bg-red-900/20 border-red-500/30">
+    <Card className="rounded-2xl shadow-lg border-red-500/30">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-red-400">
+        <CardTitle className="flex items-center gap-2 text-red-500">
           <AlertTriangle className="h-5 w-5" />
           Emergency Alert
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col items-center justify-center gap-4 p-8 text-center">
-        <p className="text-red-400/80">
+        <p className="text-muted-foreground">
           Press this button only in a real emergency to instantly notify your
           contacts.
         </p>
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button variant="destructive" size="lg" className="w-full h-16 text-lg bg-red-600 hover:bg-red-700">
+            <Button variant="destructive" size="lg" className="w-full h-16 text-lg">
               TRIGGER ALERT
             </Button>
           </AlertDialogTrigger>
@@ -262,7 +262,7 @@ export default function DashboardPage() {
   return (
     <div className="flex min-h-screen w-full flex-col">
       <AppHeader />
-      <main className="flex-1 bg-secondary/50 p-4 sm:p-6 md:p-8">
+      <main className="flex-1 bg-muted/20 p-4 sm:p-6 md:p-8">
         <div className="container mx-auto max-w-7xl">
           <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

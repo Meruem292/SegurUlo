@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Logo } from '@/components/icons';
+import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 
 export default function Home() {
   return (
@@ -39,6 +40,7 @@ export default function Home() {
           </Link>
         </nav>
         <div className="flex items-center gap-4">
+          <ThemeSwitcher />
           <Button variant="ghost" asChild>
             <Link href="/login">Log In</Link>
           </Button>
@@ -68,16 +70,16 @@ export default function Home() {
           </div>
           <div className="mt-12 flex justify-center">
             <Image
-              src="https://picsum.photos/600/600"
+              src="https://picsum.photos/600/400"
               width="600"
-              height="600"
+              height="400"
               alt="SegurUlo Smart Helmet"
               data-ai-hint="cycling helmet"
               className="rounded-2xl shadow-2xl"
             />
           </div>
         </section>
-        <section id="features" className="bg-card py-20 md:py-32">
+        <section id="features" className="bg-muted/30 py-20 md:py-32">
           <div className="container mx-auto px-4 md:px-6">
             <div className="mx-auto max-w-4xl text-center">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
@@ -219,7 +221,7 @@ export default function Home() {
           </div>
         </section>
       </main>
-      <footer className="bg-card">
+      <footer className="bg-muted/30">
         <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 py-8 md:flex-row md:px-6">
           <div className="flex items-center gap-2">
             <Logo className="h-6 w-6 text-primary" />

@@ -19,6 +19,7 @@ import { Label } from "@/components/ui/label";
 import { GoogleIcon, Logo } from "@/components/icons";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 
 export default function SignupPage() {
   const [fullName, setFullName] = useState("");
@@ -56,6 +57,9 @@ export default function SignupPage() {
 
   return (
     <div className="flex min-h-screen w-full items-center justify-center bg-background px-4">
+       <div className="absolute top-4 right-4">
+        <ThemeSwitcher />
+      </div>
       <Card className="mx-auto w-full max-w-sm rounded-2xl shadow-2xl">
         <CardHeader className="text-center">
           <Link href="/" className="inline-block mb-4">
