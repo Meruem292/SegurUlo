@@ -72,7 +72,7 @@ export default function Home() {
               width="600"
               height="600"
               alt="SegurUlo Smart Helmet"
-              data-ai-hint="smart helmet"
+              data-ai-hint="cycling helmet"
               className="rounded-2xl shadow-2xl"
             />
           </div>
