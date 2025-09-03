@@ -43,6 +43,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 interface Contact {
   id: number;
@@ -92,13 +93,13 @@ function EmergencyContacts() {
   };
 
   return (
-    <Card className="rounded-2xl shadow-lg h-full">
+    <Card className="rounded-2xl shadow-lg h-full bg-green-900/20 border-green-500/30">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Heart className="h-5 w-5 text-primary" />
+        <CardTitle className="flex items-center gap-2 text-green-400">
+          <Heart className="h-5 w-5" />
           Emergency Contacts
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-green-400/70">
           These contacts will be notified in an emergency.
         </CardDescription>
       </CardHeader>
@@ -108,24 +109,24 @@ function EmergencyContacts() {
             contacts.map((contact) => (
               <div
                 key={contact.id}
-                className="flex items-center justify-between rounded-lg bg-secondary p-3"
+                className="flex items-center justify-between rounded-lg bg-black/20 p-3"
               >
                 <div>
-                  <p className="font-medium">{contact.name}</p>
-                  <p className="text-sm text-muted-foreground">{contact.phone}</p>
+                  <p className="font-medium text-green-300">{contact.name}</p>
+                  <p className="text-sm text-green-400/70">{contact.phone}</p>
                 </div>
-                <Button variant="ghost" size="icon" onClick={() => handleRemoveContact(contact.id)}>
+                <Button variant="ghost" size="icon" onClick={() => handleRemoveContact(contact.id)} className="text-green-400 hover:bg-black/30 hover:text-green-300">
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
             ))
           ) : (
-            <p className="text-center text-muted-foreground py-4">No contacts added yet.</p>
+            <p className="text-center text-green-400/70 py-4">No contacts added yet.</p>
           )}
         </div>
         <Dialog open={isAddDialogOpen} onOpenChange={setAddDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="mt-6 w-full">
+            <Button className="mt-6 w-full bg-green-500/80 text-white hover:bg-green-500">
               <PlusCircle className="mr-2 h-4 w-4" />
               Add Contact
             </Button>
@@ -174,25 +175,31 @@ function HelmetStatus() {
   }, []);
 
   return (
-    <Card className="rounded-2xl shadow-lg">
+    <Card className={cn("rounded-2xl shadow-lg transition-colors duration-500", 
+        isConnected ? 'bg-blue-900/20 border-blue-500/30' : 'bg-orange-900/20 border-orange-500/30'
+    )}>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Shield className="h-5 w-5 text-primary" />
+        <CardTitle className={cn("flex items-center gap-2 transition-colors duration-500",
+            isConnected ? 'text-blue-400' : 'text-orange-400'
+        )}>
+          <Shield className="h-5 w-5" />
           Helmet Status
         </CardTitle>
       </CardHeader>
       <CardContent className="flex items-center justify-center gap-4 p-8">
         {isConnected ? (
           <>
-            <Wifi className="h-8 w-8 text-green-500" />
-            <Badge className="bg-green-500/20 text-green-500 border-green-500/50 hover:bg-green-500/30">
+            <Wifi className="h-8 w-8 text-blue-400" />
+            <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/50 hover:bg-blue-500/30">
               Connected
             </Badge>
           </>
         ) : (
           <>
-            <WifiOff className="h-8 w-8 text-red-500" />
-            <Badge variant="destructive">Disconnected</Badge>
+            <WifiOff className="h-8 w-8 text-orange-400" />
+            <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/50 hover:bg-orange-500/30">
+                Disconnected
+            </Badge>
           </>
         )}
       </CardContent>
@@ -212,21 +219,21 @@ function EmergencyAlert() {
   };
 
   return (
-    <Card className="rounded-2xl shadow-lg bg-destructive/10 border-destructive/20">
+    <Card className="rounded-2xl shadow-lg bg-red-900/20 border-red-500/30">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-destructive">
+        <CardTitle className="flex items-center gap-2 text-red-400">
           <AlertTriangle className="h-5 w-5" />
           Emergency Alert
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col items-center justify-center gap-4 p-8 text-center">
-        <p className="text-destructive/80">
+        <p className="text-red-400/80">
           Press this button only in a real emergency to instantly notify your
           contacts.
         </p>
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button variant="destructive" size="lg" className="w-full h-16 text-lg">
+            <Button variant="destructive" size="lg" className="w-full h-16 text-lg bg-red-600 hover:bg-red-700">
               TRIGGER ALERT
             </Button>
           </AlertDialogTrigger>

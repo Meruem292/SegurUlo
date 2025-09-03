@@ -85,6 +85,5 @@ body {
   }
   body {
     @apply bg-background text-foreground;
-    background-image: linear-gradient(to right, oklch(51.3% 0.22 258.1), oklch(72.28% 0.25 152.92), oklch(72.76% 0.22 85.82), oklch(66.59% 0.25 29.33));
   }
 }
