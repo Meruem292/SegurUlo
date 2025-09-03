@@ -43,13 +43,20 @@ const formSchema = z
 
 type ProfileFormValues = z.infer<typeof formSchema>;
 
-export default function AccountProfileForm() {
+interface AccountProfileFormProps {
+    user: {
+        name: string;
+        email: string;
+    }
+}
+
+export default function AccountProfileForm({ user }: AccountProfileFormProps) {
   const { toast } = useToast();
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: 'John Doe',
-      email: 'john.doe@example.com',
+      name: user.name || '',
+      email: user.email || '',
       password: '',
       confirmPassword: '',
     },
