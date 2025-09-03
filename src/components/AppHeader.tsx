@@ -21,7 +21,7 @@ export function AppHeader() {
 
   const navLinks = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/settings", label: "Settings", icon: Settings },
+    { href: "/settings", label: "Account Settings", icon: Settings },
   ];
 
   return (
@@ -80,7 +80,7 @@ export function AppHeader() {
                 <DropdownMenuItem asChild>
                   <Link href="/settings">
                     <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
+                    <span>Account Settings</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
