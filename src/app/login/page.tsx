@@ -56,7 +56,7 @@ export default function LoginPage() {
       <Card className="mx-auto w-full max-w-sm rounded-2xl shadow-2xl">
         <CardHeader className="text-center">
           <Link href="/" className="inline-block mb-4">
-            <Logo className="h-12 w-12 text-primary" />
+            <Logo className="h-12 w-12" />
           </Link>
           <CardTitle className="text-2xl">Welcome Back</CardTitle>
           <CardDescription>

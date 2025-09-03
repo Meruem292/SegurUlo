@@ -20,7 +20,7 @@ export default function Home() {
     <div className="flex min-h-screen flex-col">
       <header className="container mx-auto flex h-20 items-center justify-between px-4 md:px-6">
         <Link href="#" className="flex items-center gap-2" prefetch={false}>
-          <Logo className="h-8 w-8 text-primary" />
+          <Logo className="h-8 w-8" />
           <span className="text-xl font-bold">SegurUlo</span>
         </Link>
         <nav className="hidden items-center gap-6 md:flex">
@@ -224,7 +224,7 @@ export default function Home() {
       <footer className="bg-muted/30">
         <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 py-8 md:flex-row md:px-6">
           <div className="flex items-center gap-2">
-            <Logo className="h-6 w-6 text-primary" />
+            <Logo className="h-6 w-6" />
             <span className="text-lg font-semibold">SegurUlo</span>
           </div>
           <p className="text-sm text-muted-foreground">

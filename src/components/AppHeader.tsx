@@ -30,7 +30,7 @@ export function AppHeader() {
       <div className="container flex h-16 max-w-7xl items-center justify-between">
         <div className="flex items-center gap-6">
           <Link href="/dashboard" className="flex items-center gap-2">
-            <Logo className="h-6 w-6 text-primary" />
+            <Logo className="h-6 w-6" />
             <span className="font-bold hidden sm:inline-block">SegurUlo</span>
           </Link>
           <nav className="hidden md:flex items-center gap-4">
