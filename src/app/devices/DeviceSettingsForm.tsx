@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect } from 'react';
@@ -174,7 +175,7 @@ export default function DeviceSettingsForm() {
                                 max={60}
                                 step={5}
                                 value={[field.value]}
-                                onValueChange={(value) => field.onChange(value[0])}
+                                onValue-change={(value) => field.onChange(value[0])}
                             />
                              <span className="w-12 text-center font-mono text-lg">{field.value}</span>
                         </div>
@@ -202,7 +203,7 @@ export default function DeviceSettingsForm() {
                       <SelectItem value="all">All Emergency Contacts</SelectItem>
                       <SelectItem value="Family">Family</SelectItem>
                       <SelectItem value="Close Friend">Close Friends</SelectItem>
-                      <SelectItem value="custom">Custom Tag...</SelectItem>
+                      <SelectItem value="Friend">Friend</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormDescription>
@@ -228,3 +229,5 @@ export default function DeviceSettingsForm() {
     </Card>
   );
 }
+
+    

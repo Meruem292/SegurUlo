@@ -49,29 +49,25 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { auth, db } from '@/lib/firebase';
 import PersonalizationForm from '../settings/PersonalizationForm';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface Contact {
   key: string;
   name: string;
   phone: string;
-  tag?: string;
+  tags?: string[];
 }
+
+const availableTags = ['Family', 'Close Friend', 'Friend'];
 
 function EmergencyContacts() {
   const [user, userLoading] = useAuthState(auth);
   const [isAddDialogOpen, setAddDialogOpen] = useState(false);
-  const [tag, setTag] = useState('');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const { toast } = useToast();
 
   const contactsQuery = user ? ref(db, `users/${user.uid}/contacts`) : null;
@@ -105,11 +101,11 @@ function EmergencyContacts() {
         await push(userContactsRef, {
           name,
           phone,
-          tag: tag || '',
+          tags: selectedTags,
         });
         setAddDialogOpen(false);
         form.reset();
-        setTag('');
+        setSelectedTags([]);
         toast({
           title: 'Contact Added',
           description: `${name} has been added to your emergency contacts.`,
@@ -144,6 +140,12 @@ function EmergencyContacts() {
       }
     }
   };
+  
+  const handleTagChange = (tag: string, checked: boolean) => {
+    setSelectedTags(prev => 
+      checked ? [...prev, tag] : prev.filter(t => t !== tag)
+    );
+  };
 
   return (
     <Card className="rounded-2xl shadow-lg h-full border-green-500/30">
@@ -173,12 +175,14 @@ function EmergencyContacts() {
                   <p className="text-sm text-muted-foreground">
                     {contact.phone}
                   </p>
-                  {contact.tag && (
-                    <Badge variant="secondary" className="mt-1">
-                      <Tag className="mr-1 h-3 w-3" />
-                      {contact.tag}
-                    </Badge>
-                  )}
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {contact.tags?.map(tag => (
+                       <Badge variant="secondary" key={tag}>
+                        <Tag className="mr-1 h-3 w-3" />
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
@@ -216,7 +220,12 @@ function EmergencyContacts() {
             </p>
           )}
         </div>
-        <Dialog open={isAddDialogOpen} onOpenChange={setAddDialogOpen}>
+        <Dialog open={isAddDialogOpen} onOpenChange={(isOpen) => {
+          setAddDialogOpen(isOpen);
+          if (!isOpen) {
+            setSelectedTags([]);
+          }
+        }}>
           <DialogTrigger asChild>
             <Button
               className="mt-6 w-full bg-green-500 text-white hover:bg-green-500/90"
@@ -258,20 +267,22 @@ function EmergencyContacts() {
                     required
                   />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="tag" className="text-right">
-                    Tag
+                <div className="grid grid-cols-4 items-start gap-4 pt-2">
+                  <Label className="text-right leading-snug">
+                    Tags
                   </Label>
-                  <Select name="tag" onValueChange={setTag}>
-                    <SelectTrigger className="col-span-3">
-                      <SelectValue placeholder="Select a tag" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Family">Family</SelectItem>
-                      <SelectItem value="Close Friend">Close Friend</SelectItem>
-                      <SelectItem value="Friend">Friend</SelectItem>
-                    </SelectContent>
-                  </Select>
+                   <div className="col-span-3 grid gap-2">
+                    {availableTags.map((tag) => (
+                      <div key={tag} className="flex items-center gap-2">
+                        <Checkbox 
+                          id={`tag-${tag}`}
+                          onCheckedChange={(checked) => handleTagChange(tag, !!checked)}
+                          checked={selectedTags.includes(tag)}
+                        />
+                        <Label htmlFor={`tag-${tag}`} className="font-normal">{tag}</Label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
               <DialogFooter>
@@ -419,3 +430,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    
