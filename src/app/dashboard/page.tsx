@@ -9,6 +9,7 @@ import {
   Trash2,
   Wifi,
   WifiOff,
+  Tag,
 } from 'lucide-react';
 import { AppHeader } from '@/components/AppHeader';
 import {
@@ -50,6 +51,7 @@ interface Contact {
   id: number;
   name: string;
   phone: string;
+  tag?: string;
 }
 
 function EmergencyContacts() {
@@ -63,11 +65,12 @@ function EmergencyContacts() {
     const formData = new FormData(form);
     const name = formData.get('name') as string;
     const phone = formData.get('phone') as string;
+    const tag = formData.get('tag') as string;
 
     if (name && phone) {
       setContacts([
         ...contacts,
-        { id: Date.now(), name, phone },
+        { id: Date.now(), name, phone, tag: tag || undefined },
       ]);
       setAddDialogOpen(false);
       form.reset();
@@ -112,6 +115,12 @@ function EmergencyContacts() {
                 <div>
                   <p className="font-medium">{contact.name}</p>
                   <p className="text-sm text-muted-foreground">{contact.phone}</p>
+                  {contact.tag && (
+                    <Badge variant="secondary" className="mt-1">
+                      <Tag className="mr-1 h-3 w-3" />
+                      {contact.tag}
+                    </Badge>
+                  )}
                 </div>
                 <Button variant="ghost" size="icon" onClick={() => handleRemoveContact(contact.id)} className="text-muted-foreground hover:bg-muted/80 hover:text-foreground">
                   <Trash2 className="h-4 w-4" />
@@ -149,6 +158,12 @@ function EmergencyContacts() {
                     Phone
                   </Label>
                   <Input id="phone" name="phone" type="tel" className="col-span-3" required />
+                </div>
+                 <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="tag" className="text-right">
+                    Tag
+                  </Label>
+                  <Input id="tag" name="tag" placeholder="e.g., Family, Close Friend" className="col-span-3" />
                 </div>
               </div>
               <DialogFooter>
