@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -48,6 +49,13 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { auth, db } from '@/lib/firebase';
@@ -63,8 +71,9 @@ interface Contact {
 function EmergencyContacts() {
   const [user, userLoading] = useAuthState(auth);
   const [isAddDialogOpen, setAddDialogOpen] = useState(false);
+  const [tag, setTag] = useState('');
   const { toast } = useToast();
-  
+
   const contactsQuery = user ? ref(db, `users/${user.uid}/contacts`) : null;
   const [snapshots, loading] = useList(contactsQuery);
 
@@ -73,7 +82,7 @@ function EmergencyContacts() {
       key: snapshot.key as string,
       ...snapshot.val(),
     })) || [];
-  
+
   const handleAddContact = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!user) {
@@ -84,12 +93,11 @@ function EmergencyContacts() {
       });
       return;
     }
-    
+
     const form = event.currentTarget;
     const formData = new FormData(form);
     const name = formData.get('name') as string;
     const phone = formData.get('phone') as string;
-    const tag = formData.get('tag') as string;
 
     if (name && phone) {
       try {
@@ -101,6 +109,7 @@ function EmergencyContacts() {
         });
         setAddDialogOpen(false);
         form.reset();
+        setTag('');
         toast({
           title: 'Contact Added',
           description: `${name} has been added to your emergency contacts.`,
@@ -150,7 +159,7 @@ function EmergencyContacts() {
       <CardContent>
         <div className="space-y-4">
           {loading || userLoading ? (
-             <div className="flex justify-center items-center py-4">
+            <div className="flex justify-center items-center py-4">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
             </div>
           ) : contacts.length > 0 ? (
@@ -173,7 +182,11 @@ function EmergencyContacts() {
                 </div>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="ghost" size="icon" className="text-muted-foreground hover:bg-muted/80 hover:text-foreground">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+                    >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </AlertDialogTrigger>
@@ -181,12 +194,15 @@ function EmergencyContacts() {
                     <AlertDialogHeader>
                       <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                       <AlertDialogDescription>
-                        This will permanently remove {contact.name} from your emergency contacts.
+                        This will permanently remove {contact.name} from your
+                        emergency contacts.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => handleRemoveContact(contact.key)}>
+                      <AlertDialogAction
+                        onClick={() => handleRemoveContact(contact.key)}
+                      >
                         Yes, Remove
                       </AlertDialogAction>
                     </AlertDialogFooter>
@@ -202,7 +218,10 @@ function EmergencyContacts() {
         </div>
         <Dialog open={isAddDialogOpen} onOpenChange={setAddDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="mt-6 w-full bg-green-500 text-white hover:bg-green-500/90" disabled={!user}>
+            <Button
+              className="mt-6 w-full bg-green-500 text-white hover:bg-green-500/90"
+              disabled={!user}
+            >
               <PlusCircle className="mr-2 h-4 w-4" />
               Add Contact
             </Button>
@@ -220,7 +239,12 @@ function EmergencyContacts() {
                   <Label htmlFor="name" className="text-right">
                     Name
                   </Label>
-                  <Input id="name" name="name" className="col-span-3" required />
+                  <Input
+                    id="name"
+                    name="name"
+                    className="col-span-3"
+                    required
+                  />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="phone" className="text-right">
@@ -238,12 +262,16 @@ function EmergencyContacts() {
                   <Label htmlFor="tag" className="text-right">
                     Tag
                   </Label>
-                  <Input
-                    id="tag"
-                    name="tag"
-                    placeholder="e.g., Family, Close Friend"
-                    className="col-span-3"
-                  />
+                  <Select name="tag" onValueChange={setTag}>
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Select a tag" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Family">Family</SelectItem>
+                      <SelectItem value="Close Friend">Close Friend</SelectItem>
+                      <SelectItem value="Friend">Friend</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               <DialogFooter>
@@ -257,25 +285,30 @@ function EmergencyContacts() {
   );
 }
 
-
 function HelmetStatus() {
   const [isConnected, setIsConnected] = useState(true);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setIsConnected((prev) => !prev);
+      setIsConnected(prev => !prev);
     }, 5000);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <Card className={cn("rounded-2xl shadow-lg transition-colors duration-500", 
+    <Card
+      className={cn(
+        'rounded-2xl shadow-lg transition-colors duration-500',
         isConnected ? 'border-blue-500/30' : 'border-orange-500/30'
-    )}>
+      )}
+    >
       <CardHeader>
-        <CardTitle className={cn("flex items-center gap-2 transition-colors duration-500",
+        <CardTitle
+          className={cn(
+            'flex items-center gap-2 transition-colors duration-500',
             isConnected ? 'text-blue-500' : 'text-orange-500'
-        )}>
+          )}
+        >
           <Shield className="h-5 w-5" />
           Helmet Status
         </CardTitle>
@@ -284,15 +317,21 @@ function HelmetStatus() {
         {isConnected ? (
           <>
             <Wifi className="h-8 w-8 text-blue-500" />
-            <Badge variant="outline" className="border-blue-500/50 text-blue-500">
+            <Badge
+              variant="outline"
+              className="border-blue-500/50 text-blue-500"
+            >
               Connected
             </Badge>
           </>
         ) : (
           <>
             <WifiOff className="h-8 w-8 text-orange-500" />
-            <Badge variant="outline" className="border-orange-500/50 text-orange-500">
-                Disconnected
+            <Badge
+              variant="outline"
+              className="border-orange-500/50 text-orange-500"
+            >
+              Disconnected
             </Badge>
           </>
         )}
@@ -327,7 +366,11 @@ function EmergencyAlert() {
         </p>
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button variant="destructive" size="lg" className="w-full h-16 text-lg">
+            <Button
+              variant="destructive"
+              size="lg"
+              className="w-full h-16 text-lg"
+            >
               TRIGGER ALERT
             </Button>
           </AlertDialogTrigger>
@@ -335,8 +378,8 @@ function EmergencyAlert() {
             <AlertDialogHeader>
               <AlertDialogTitle>Are you sure?</AlertDialogTitle>
               <AlertDialogDescription>
-                This will immediately send an emergency alert with your
-                location to all your emergency contacts.
+                This will immediately send an emergency alert with your location
+                to all your emergency contacts.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -368,7 +411,7 @@ export default function DashboardPage() {
               <PersonalizationForm />
             </div>
             <div className="row-span-2">
-                <EmergencyContacts />
+              <EmergencyContacts />
             </div>
           </div>
         </div>
