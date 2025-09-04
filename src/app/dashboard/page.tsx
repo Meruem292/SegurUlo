@@ -12,16 +12,9 @@ import {
   Tag,
   Loader2,
 } from 'lucide-react';
-import {
-  collection,
-  addDoc,
-  deleteDoc,
-  doc,
-  query,
-  where,
-} from 'firebase/firestore';
+import { ref, push, remove, query, orderByChild, equalTo } from 'firebase/database';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { useCollection } from 'react-firebase-hooks/firestore';
+import { useList } from 'react-firebase-hooks/database';
 
 import { AppHeader } from '@/components/AppHeader';
 import {
@@ -61,7 +54,7 @@ import { auth, db } from '@/lib/firebase';
 import PersonalizationForm from '../settings/PersonalizationForm';
 
 interface Contact {
-  id: string;
+  key: string;
   name: string;
   phone: string;
   tag?: string;
@@ -72,16 +65,14 @@ function EmergencyContacts() {
   const [isAddDialogOpen, setAddDialogOpen] = useState(false);
   const { toast } = useToast();
   
-  const contactsRef = collection(db, 'contacts');
-  const contactsQuery = user ? query(contactsRef, where('userId', '==', user.uid)) : null;
-  const [contactsSnapshot, loading] = useCollection(contactsQuery);
+  const contactsRef = ref(db, 'contacts');
+  const contactsQuery = user ? query(contactsRef, orderByChild('userId'), equalTo(user.uid)) : null;
+  const [snapshots, loading] = useList(contactsQuery);
 
   const contacts: Contact[] =
-    contactsSnapshot?.docs.map(doc => ({
-      id: doc.id,
-      name: doc.data().name,
-      phone: doc.data().phone,
-      tag: doc.data().tag,
+    snapshots?.map(snapshot => ({
+      key: snapshot.key,
+      ...snapshot.val(),
     })) || [];
   
   const handleAddContact = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -103,7 +94,7 @@ function EmergencyContacts() {
 
     if (name && phone) {
       try {
-        await addDoc(contactsRef, {
+        await push(ref(db, 'contacts'), {
           userId: user.uid,
           name,
           phone,
@@ -125,11 +116,11 @@ function EmergencyContacts() {
     }
   };
 
-  const handleRemoveContact = async (id: string) => {
-    const contactToRemove = contacts.find(c => c.id === id);
+  const handleRemoveContact = async (key: string) => {
+    const contactToRemove = contacts.find(c => c.key === key);
     if (contactToRemove) {
       try {
-        await deleteDoc(doc(db, 'contacts', id));
+        await remove(ref(db, `contacts/${key}`));
         toast({
           title: 'Contact Removed',
           description: `${contactToRemove.name} has been removed.`,
@@ -165,7 +156,7 @@ function EmergencyContacts() {
           ) : contacts.length > 0 ? (
             contacts.map(contact => (
               <div
-                key={contact.id}
+                key={contact.key}
                 className="flex items-center justify-between rounded-lg bg-muted p-3"
               >
                 <div>
@@ -195,7 +186,7 @@ function EmergencyContacts() {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => handleRemoveContact(contact.id)}>
+                      <AlertDialogAction onClick={() => handleRemoveContact(contact.key)}>
                         Yes, Remove
                       </AlertDialogAction>
                     </AlertDialogFooter>
