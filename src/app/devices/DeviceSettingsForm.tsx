@@ -36,7 +36,6 @@ import { Loader2, Smartphone, Save } from 'lucide-react';
 
 const formSchema = z.object({
   deviceId: z.string().min(1, 'Device ID is required.'),
-  deviceContact: z.string().min(10, 'Please enter a valid phone number.'),
   gpsSmsInterval: z.number().min(0).max(60),
   gpsWebInterval: z.number().min(0).max(60),
   alertContactTag: z.string().optional(),
@@ -50,7 +49,6 @@ export default function DeviceSettingsForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       deviceId: '',
-      deviceContact: '',
       gpsSmsInterval: 15,
       gpsWebInterval: 5,
       alertContactTag: 'all',
@@ -94,22 +92,6 @@ export default function DeviceSettingsForm() {
                   <FormControl>
                     <Input placeholder="Enter the ID found on your device" {...field} />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="deviceContact"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Device Contact Number</FormLabel>
-                  <FormControl>
-                    <Input type="tel" placeholder="e.g., +1234567890" {...field} />
-                  </FormControl>
-                   <FormDescription>
-                    The phone number associated with the device's SIM card.
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
