@@ -1,7 +1,7 @@
 "use client";
 
-import { useFormStatus } from "react-dom";
-import { useActionState, useEffect, useRef } from "react";
+import { useFormStatus, useFormState } from "react-dom";
+import { useEffect, useRef } from "react";
 import { Bot, Loader2, Sparkles } from "lucide-react";
 
 import {
@@ -39,7 +39,7 @@ function SubmitButton() {
 
 export default function PersonalizationForm() {
   const initialState: FormState = { message: "" };
-  const [state, formAction] = useActionState(getPersonalizedSettings, initialState);
+  const [state, formAction] = useFormState(getPersonalizedSettings, initialState);
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
 
