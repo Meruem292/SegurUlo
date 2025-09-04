@@ -63,7 +63,7 @@ export default function DeviceSettingsForm() {
 
   useEffect(() => {
     if (user) {
-      const settingsRef = ref(db, `deviceSettings/${user.uid}`);
+      const settingsRef = ref(db, `users/${user.uid}/deviceSettings`);
       onValue(settingsRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
@@ -86,7 +86,7 @@ export default function DeviceSettingsForm() {
     }
 
     try {
-      const settingsRef = ref(db, `deviceSettings/${user.uid}`);
+      const settingsRef = ref(db, `users/${user.uid}/deviceSettings`);
       await set(settingsRef, data);
       toast({
         title: 'Settings Saved',

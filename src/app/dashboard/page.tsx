@@ -12,7 +12,7 @@ import {
   Tag,
   Loader2,
 } from 'lucide-react';
-import { ref, push, remove, query, orderByChild, equalTo } from 'firebase/database';
+import { ref, push, remove, query, onValue } from 'firebase/database';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useList } from 'react-firebase-hooks/database';
 
@@ -65,8 +65,7 @@ function EmergencyContacts() {
   const [isAddDialogOpen, setAddDialogOpen] = useState(false);
   const { toast } = useToast();
   
-  const contactsRef = user ? ref(db, 'contacts') : null;
-  const contactsQuery = contactsRef ? query(contactsRef, orderByChild('userId'), equalTo(user!.uid)) : null;
+  const contactsQuery = user ? ref(db, `users/${user.uid}/contacts`) : null;
   const [snapshots, loading] = useList(contactsQuery);
 
   const contacts: Contact[] =
@@ -94,8 +93,8 @@ function EmergencyContacts() {
 
     if (name && phone) {
       try {
-        await push(ref(db, 'contacts'), {
-          userId: user.uid,
+        const userContactsRef = ref(db, `users/${user.uid}/contacts`);
+        await push(userContactsRef, {
           name,
           phone,
           tag: tag || '',
@@ -121,7 +120,7 @@ function EmergencyContacts() {
     const contactToRemove = contacts.find(c => c.key === key);
     if (contactToRemove) {
       try {
-        await remove(ref(db, `contacts/${key}`));
+        await remove(ref(db, `users/${user.uid}/contacts/${key}`));
         toast({
           title: 'Contact Removed',
           description: `${contactToRemove.name} has been removed.`,
