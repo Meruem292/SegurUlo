@@ -53,10 +53,7 @@ interface Contact {
 }
 
 function EmergencyContacts() {
-  const [contacts, setContacts] = useState<Contact[]>([
-    { id: 1, name: 'Jane Doe', phone: '555-123-4567' },
-    { id: 2, name: 'John Smith', phone: '555-987-6543' },
-  ]);
+  const [contacts, setContacts] = useState<Contact[]>([]);
   const [isAddDialogOpen, setAddDialogOpen] = useState(false);
   const { toast } = useToast();
 
