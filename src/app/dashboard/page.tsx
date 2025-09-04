@@ -10,7 +10,19 @@ import {
   Wifi,
   WifiOff,
   Tag,
+  Loader2,
 } from 'lucide-react';
+import {
+  collection,
+  addDoc,
+  deleteDoc,
+  doc,
+  query,
+  where,
+} from 'firebase/firestore';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { useCollection } from 'react-firebase-hooks/firestore';
+
 import { AppHeader } from '@/components/AppHeader';
 import {
   Card,
@@ -45,22 +57,44 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { auth, db } from '@/lib/firebase';
 import PersonalizationForm from '../settings/PersonalizationForm';
 
 interface Contact {
-  id: number;
+  id: string;
   name: string;
   phone: string;
   tag?: string;
 }
 
 function EmergencyContacts() {
-  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [user, userLoading] = useAuthState(auth);
   const [isAddDialogOpen, setAddDialogOpen] = useState(false);
   const { toast } = useToast();
+  
+  const contactsRef = collection(db, 'contacts');
+  const contactsQuery = user ? query(contactsRef, where('userId', '==', user.uid)) : null;
+  const [contactsSnapshot, loading] = useCollection(contactsQuery);
 
-  const handleAddContact = (event: React.FormEvent<HTMLFormElement>) => {
+  const contacts: Contact[] =
+    contactsSnapshot?.docs.map(doc => ({
+      id: doc.id,
+      name: doc.data().name,
+      phone: doc.data().phone,
+      tag: doc.data().tag,
+    })) || [];
+  
+  const handleAddContact = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!user) {
+      toast({
+        title: 'Not Logged In',
+        description: 'You must be logged in to add contacts.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
     const form = event.currentTarget;
     const formData = new FormData(form);
     const name = formData.get('name') as string;
@@ -68,28 +102,46 @@ function EmergencyContacts() {
     const tag = formData.get('tag') as string;
 
     if (name && phone) {
-      setContacts([
-        ...contacts,
-        { id: Date.now(), name, phone, tag: tag || undefined },
-      ]);
-      setAddDialogOpen(false);
-      form.reset();
-      toast({
-        title: "Contact Added",
-        description: `${name} has been added to your emergency contacts.`,
-      });
+      try {
+        await addDoc(contactsRef, {
+          userId: user.uid,
+          name,
+          phone,
+          tag: tag || '',
+        });
+        setAddDialogOpen(false);
+        form.reset();
+        toast({
+          title: 'Contact Added',
+          description: `${name} has been added to your emergency contacts.`,
+        });
+      } catch (error) {
+        toast({
+          title: 'Error Adding Contact',
+          description: 'There was a problem saving your contact.',
+          variant: 'destructive',
+        });
+      }
     }
   };
-  
-  const handleRemoveContact = (id: number) => {
+
+  const handleRemoveContact = async (id: string) => {
     const contactToRemove = contacts.find(c => c.id === id);
     if (contactToRemove) {
-        setContacts(contacts.filter((contact) => contact.id !== id));
+      try {
+        await deleteDoc(doc(db, 'contacts', id));
         toast({
-            title: "Contact Removed",
-            description: `${contactToRemove.name} has been removed.`,
-            variant: "destructive"
+          title: 'Contact Removed',
+          description: `${contactToRemove.name} has been removed.`,
+          variant: 'destructive',
         });
+      } catch (error) {
+        toast({
+          title: 'Error Removing Contact',
+          description: 'There was a problem removing your contact.',
+          variant: 'destructive',
+        });
+      }
     }
   };
 
@@ -106,15 +158,21 @@ function EmergencyContacts() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {contacts.length > 0 ? (
-            contacts.map((contact) => (
+          {loading || userLoading ? (
+             <div className="flex justify-center items-center py-4">
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            </div>
+          ) : contacts.length > 0 ? (
+            contacts.map(contact => (
               <div
                 key={contact.id}
                 className="flex items-center justify-between rounded-lg bg-muted p-3"
               >
                 <div>
                   <p className="font-medium">{contact.name}</p>
-                  <p className="text-sm text-muted-foreground">{contact.phone}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {contact.phone}
+                  </p>
                   {contact.tag && (
                     <Badge variant="secondary" className="mt-1">
                       <Tag className="mr-1 h-3 w-3" />
@@ -122,18 +180,38 @@ function EmergencyContacts() {
                     </Badge>
                   )}
                 </div>
-                <Button variant="ghost" size="icon" onClick={() => handleRemoveContact(contact.id)} className="text-muted-foreground hover:bg-muted/80 hover:text-foreground">
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="icon" className="text-muted-foreground hover:bg-muted/80 hover:text-foreground">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will permanently remove {contact.name} from your emergency contacts.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => handleRemoveContact(contact.id)}>
+                        Yes, Remove
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             ))
           ) : (
-            <p className="text-center text-muted-foreground py-4">No contacts added yet.</p>
+            <p className="text-center text-muted-foreground py-4">
+              No contacts added yet.
+            </p>
           )}
         </div>
         <Dialog open={isAddDialogOpen} onOpenChange={setAddDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="mt-6 w-full bg-green-500 text-white hover:bg-green-500/90">
+            <Button className="mt-6 w-full bg-green-500 text-white hover:bg-green-500/90" disabled={!user}>
               <PlusCircle className="mr-2 h-4 w-4" />
               Add Contact
             </Button>
@@ -157,13 +235,24 @@ function EmergencyContacts() {
                   <Label htmlFor="phone" className="text-right">
                     Phone
                   </Label>
-                  <Input id="phone" name="phone" type="tel" className="col-span-3" required />
+                  <Input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    className="col-span-3"
+                    required
+                  />
                 </div>
-                 <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="tag" className="text-right">
                     Tag
                   </Label>
-                  <Input id="tag" name="tag" placeholder="e.g., Family, Close Friend" className="col-span-3" />
+                  <Input
+                    id="tag"
+                    name="tag"
+                    placeholder="e.g., Family, Close Friend"
+                    className="col-span-3"
+                  />
                 </div>
               </div>
               <DialogFooter>
@@ -176,6 +265,7 @@ function EmergencyContacts() {
     </Card>
   );
 }
+
 
 function HelmetStatus() {
   const [isConnected, setIsConnected] = useState(true);
