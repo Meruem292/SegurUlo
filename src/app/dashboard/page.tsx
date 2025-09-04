@@ -65,13 +65,13 @@ function EmergencyContacts() {
   const [isAddDialogOpen, setAddDialogOpen] = useState(false);
   const { toast } = useToast();
   
-  const contactsRef = ref(db, 'contacts');
-  const contactsQuery = user ? query(contactsRef, orderByChild('userId'), equalTo(user.uid)) : null;
+  const contactsRef = user ? ref(db, 'contacts') : null;
+  const contactsQuery = contactsRef ? query(contactsRef, orderByChild('userId'), equalTo(user!.uid)) : null;
   const [snapshots, loading] = useList(contactsQuery);
 
   const contacts: Contact[] =
     snapshots?.map(snapshot => ({
-      key: snapshot.key,
+      key: snapshot.key as string,
       ...snapshot.val(),
     })) || [];
   
@@ -117,6 +117,7 @@ function EmergencyContacts() {
   };
 
   const handleRemoveContact = async (key: string) => {
+    if (!user) return;
     const contactToRemove = contacts.find(c => c.key === key);
     if (contactToRemove) {
       try {
@@ -196,7 +197,7 @@ function EmergencyContacts() {
             ))
           ) : (
             <p className="text-center text-muted-foreground py-4">
-              No contacts added yet.
+              No contacts found.
             </p>
           )}
         </div>

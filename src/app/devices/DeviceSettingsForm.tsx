@@ -1,9 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { ref, set, onValue } from 'firebase/database';
+import { useAuthState } from 'react-firebase-hooks/auth';
+
 import {
   Card,
   CardContent,
@@ -33,6 +36,7 @@ import {
 import { Slider } from '@/components/ui/slider';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Smartphone, Save } from 'lucide-react';
+import { auth, db } from '@/lib/firebase';
 
 const formSchema = z.object({
   deviceId: z.string().min(1, 'Device ID is required.'),
@@ -45,6 +49,8 @@ type DeviceSettingsFormValues = z.infer<typeof formSchema>;
 
 export default function DeviceSettingsForm() {
   const { toast } = useToast();
+  const [user, loading] = useAuthState(auth);
+
   const form = useForm<DeviceSettingsFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -55,19 +61,53 @@ export default function DeviceSettingsForm() {
     },
   });
 
+  useEffect(() => {
+    if (user) {
+      const settingsRef = ref(db, `deviceSettings/${user.uid}`);
+      onValue(settingsRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          form.reset(data);
+        }
+      });
+    }
+  }, [user, form]);
+
   const { isSubmitting } = form.formState;
 
   const onSubmit = async (data: DeviceSettingsFormValues) => {
-    // This is a prototype, so we'll just simulate a save.
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    
-    console.log(data);
-    
-    toast({
-      title: 'Settings Saved',
-      description: 'Your device settings have been successfully updated.',
-    });
+    if (!user) {
+      toast({
+        title: 'Not Logged In',
+        description: 'You must be logged in to save settings.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    try {
+      const settingsRef = ref(db, `deviceSettings/${user.uid}`);
+      await set(settingsRef, data);
+      toast({
+        title: 'Settings Saved',
+        description: 'Your device settings have been successfully updated.',
+      });
+    } catch (error) {
+      toast({
+        title: 'Error Saving Settings',
+        description: 'There was a problem saving your device settings.',
+        variant: 'destructive',
+      });
+    }
   };
+
+  if (loading) {
+    return (
+      <Card className="rounded-2xl shadow-lg flex items-center justify-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </Card>
+    )
+  }
 
   return (
     <Card className="rounded-2xl shadow-lg">
@@ -174,7 +214,7 @@ export default function DeviceSettingsForm() {
             />
           </CardContent>
           <CardFooter>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting || loading || !user}>
               {isSubmitting ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
