@@ -67,6 +67,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface Device {
   key: string;
@@ -376,13 +377,17 @@ export default function DeviceManager() {
                 </Button>
             </DialogTrigger>
             <DialogContent className="max-w-lg">
-                <DialogHeader>
+              <ScrollArea className="max-h-[80vh] p-6">
+                <DialogHeader className="pr-6">
                     <DialogTitle>{editingDevice ? 'Edit Device' : 'Register New Device'}</DialogTitle>
                     <DialogDescription>
                         {editingDevice ? 'Update the settings for this device.' : 'Enter the ID and configure your new device.'}
                     </DialogDescription>
                 </DialogHeader>
-                <DeviceForm device={editingDevice} onSave={() => setFormOpen(false)} />
+                <div className="pr-6">
+                 <DeviceForm device={editingDevice} onSave={() => setFormOpen(false)} />
+                </div>
+              </ScrollArea>
             </DialogContent>
            </Dialog>
       </CardHeader>
