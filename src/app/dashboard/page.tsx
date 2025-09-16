@@ -13,8 +13,10 @@ import {
   Tag,
   Loader2,
   Settings2,
+  BookUser,
 } from 'lucide-react';
-import { ref, push, remove, query, onValue, set } from 'firebase/database';
+import Link from 'next/link';
+import { ref, query, onValue } from 'firebase/database';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useList } from 'react-firebase-hooks/database';
 
@@ -39,22 +41,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { auth, db } from '@/lib/firebase';
 import PersonalizationForm from '../settings/PersonalizationForm';
-import { Checkbox } from '@/components/ui/checkbox';
 
 interface Contact {
   key: string;
@@ -63,19 +53,8 @@ interface Contact {
   tags?: string[];
 }
 
-interface TagInfo {
-  key: string;
-  name: string;
-}
-
-const defaultTags = ['Family', 'Close Friend', 'Friend'];
-
 function EmergencyContacts() {
   const [user, userLoading] = useAuthState(auth);
-  const [isAddDialogOpen, setAddDialogOpen] = useState(false);
-  const [isGroupsDialogOpen, setGroupsDialogOpen] = useState(false);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const { toast } = useToast();
   
   const contactsQuery = user ? query(ref(db, `users/${user.uid}/contacts`)) : null;
   const [contactsSnapshots, contactsLoading] = useList(contactsQuery);
@@ -85,124 +64,7 @@ function EmergencyContacts() {
       ...snapshot.val(),
     })) || [];
 
-  const groupsQuery = user ? query(ref(db, `users/${user.uid}/groups`)) : null;
-  const [groupsSnapshots, groupsLoading] = useList(groupsQuery);
-  const customGroups: TagInfo[] =
-    groupsSnapshots?.map(snapshot => ({
-      key: snapshot.key as string,
-      ...snapshot.val(),
-    })) || [];
-
-  const availableTags = useMemo(() => [...defaultTags, ...customGroups.map(g => g.name)], [customGroups]);
-
-  const handleAddContact = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!user) {
-      toast({
-        title: 'Not Logged In',
-        description: 'You must be logged in to add contacts.',
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    const form = event.currentTarget;
-    const formData = new FormData(form);
-    const name = formData.get('name') as string;
-    const phone = formData.get('phone') as string;
-
-    if (name && phone) {
-      try {
-        const userContactsRef = ref(db, `users/${user.uid}/contacts`);
-        await push(userContactsRef, {
-          name,
-          phone,
-          tags: selectedTags,
-        });
-        handleOpenChange(false);
-        toast({
-          title: 'Contact Added',
-          description: `${name} has been added to your emergency contacts.`,
-        });
-      } catch (error) {
-        toast({
-          title: 'Error Adding Contact',
-          description: 'There was a problem saving your contact.',
-          variant: 'destructive',
-        });
-      }
-    }
-  };
-
-  const handleAddGroup = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!user) return;
-
-    const form = event.currentTarget;
-    const formData = new FormData(form);
-    const groupName = formData.get('groupName') as string;
-    
-    if (groupName && !availableTags.includes(groupName)) {
-      try {
-        const userGroupsRef = ref(db, `users/${user.uid}/groups`);
-        await push(userGroupsRef, { name: groupName });
-        toast({ title: 'Group Added', description: `The group "${groupName}" has been created.` });
-        form.reset();
-      } catch (error) {
-        toast({ title: 'Error', description: 'Could not add group.', variant: 'destructive' });
-      }
-    } else if (availableTags.includes(groupName)) {
-       toast({ title: 'Group Exists', description: `The group "${groupName}" already exists.`, variant: 'destructive' });
-    }
-  };
-  
-  const handleRemoveGroup = async (key: string) => {
-    if (!user) return;
-    try {
-      await remove(ref(db, `users/${user.uid}/groups/${key}`));
-      toast({ title: 'Group Removed', variant: 'destructive' });
-    } catch (error) {
-       toast({ title: 'Error', description: 'Could not remove group.', variant: 'destructive' });
-    }
-  };
-
-  const handleRemoveContact = async (key: string) => {
-    if (!user) return;
-    const contactToRemove = contacts.find(c => c.key === key);
-    if (contactToRemove) {
-      try {
-        await remove(ref(db, `users/${user.uid}/contacts/${key}`));
-        toast({
-          title: 'Contact Removed',
-          description: `${contactToRemove.name} has been removed.`,
-          variant: 'destructive',
-        });
-      } catch (error) {
-        toast({
-          title: 'Error Removing Contact',
-          description: 'There was a problem removing your contact.',
-          variant: 'destructive',
-        });
-      }
-    }
-  };
-  
-  const handleTagChange = (tag: string, checked: boolean) => {
-    setSelectedTags(prev => 
-      checked ? [...prev, tag] : prev.filter(t => t !== tag)
-    );
-  };
-  
-  const handleOpenChange = (isOpen: boolean) => {
-    setAddDialogOpen(isOpen);
-    if (!isOpen) {
-      const form = document.getElementById('add-contact-form') as HTMLFormElement;
-      form?.reset();
-      setSelectedTags([]);
-    }
-  };
-
-  const isLoading = userLoading || contactsLoading || groupsLoading;
+  const isLoading = userLoading || contactsLoading;
 
   return (
     <Card className="rounded-2xl shadow-lg h-full border-green-500/30">
@@ -214,43 +76,15 @@ function EmergencyContacts() {
                     Emergency Contacts
                 </CardTitle>
                 <CardDescription>
-                    These contacts will be notified in an emergency.
+                    A quick look at your emergency contacts.
                 </CardDescription>
             </div>
-            <Dialog open={isGroupsDialogOpen} onOpenChange={setGroupsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button variant="ghost" size="icon" disabled={!user}>
-                  <Settings2 className="h-5 w-5" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                 <DialogHeader>
-                  <DialogTitle>Manage Contact Groups</DialogTitle>
-                  <DialogDescription>Add or remove custom contact groups.</DialogDescription>
-                </DialogHeader>
-                 <form onSubmit={handleAddGroup} className="flex items-center gap-2">
-                  <Input name="groupName" placeholder="New group name" required />
-                  <Button type="submit"><PlusCircle className="h-4 w-4" /></Button>
-                </form>
-                <div className="mt-4 space-y-2">
-                  <h4 className="font-medium">Custom Groups</h4>
-                  {groupsLoading ? (
-                     <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : customGroups.length > 0 ? (
-                     customGroups.map(group => (
-                        <div key={group.key} className="flex items-center justify-between rounded-md bg-muted p-2">
-                          <span>{group.name}</span>
-                           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleRemoveGroup(group.key)}>
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                     ))
-                  ) : (
-                    <p className="text-sm text-muted-foreground">No custom groups yet.</p>
-                  )}
-                </div>
-              </DialogContent>
-            </Dialog>
+            <Button asChild variant="outline">
+                <Link href="/contacts">
+                    <BookUser className="mr-2 h-4 w-4" />
+                    Manage Contacts
+                </Link>
+            </Button>
         </div>
       </CardHeader>
       <CardContent>
@@ -279,34 +113,6 @@ function EmergencyContacts() {
                     ))}
                   </div>
                 </div>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-muted-foreground hover:bg-muted/80 hover:text-foreground"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This will permanently remove {contact.name} from your
-                        emergency contacts.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() => handleRemoveContact(contact.key)}
-                      >
-                        Yes, Remove
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
               </div>
             ))
           ) : (
@@ -315,73 +121,6 @@ function EmergencyContacts() {
             </p>
           )}
         </div>
-        <Dialog open={isAddDialogOpen} onOpenChange={handleOpenChange}>
-          <DialogTrigger asChild>
-            <Button
-              className="mt-6 w-full bg-green-500 text-white hover:bg-green-500/90"
-              disabled={!user}
-            >
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Add Contact
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add Emergency Contact</DialogTitle>
-              <DialogDescription>
-                Enter the name and phone number of your new contact.
-              </DialogDescription>
-            </DialogHeader>
-            <form id="add-contact-form" onSubmit={handleAddContact}>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="name" className="text-right">
-                    Name
-                  </Label>
-                  <Input
-                    id="name"
-                    name="name"
-                    className="col-span-3"
-                    required
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="phone" className="text-right">
-                    Phone
-                  </Label>
-                  <Input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    className="col-span-3"
-                    required
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-start gap-4 pt-2">
-                  <Label className="text-right leading-snug">
-                    Tags
-                  </Label>
-                   <div className="col-span-3 grid gap-2">
-                     {groupsLoading &&  <Loader2 className="h-4 w-4 animate-spin" />}
-                    {availableTags.map((tag) => (
-                      <div key={tag} className="flex items-center gap-2">
-                        <Checkbox 
-                          id={`tag-${tag}`}
-                          onCheckedChange={(checked) => handleTagChange(tag, !!checked)}
-                          checked={selectedTags.includes(tag)}
-                        />
-                        <Label htmlFor={`tag-${tag}`} className="font-normal">{tag}</Label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <DialogFooter>
-                <Button type="submit">Save Contact</Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
       </CardContent>
     </Card>
   );
@@ -521,5 +260,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    

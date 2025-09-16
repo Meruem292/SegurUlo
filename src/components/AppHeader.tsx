@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { User, LogOut, Settings, LayoutDashboard, Smartphone } from "lucide-react";
+import { User, LogOut, Settings, LayoutDashboard, Smartphone, BookUser } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -25,6 +25,7 @@ export function AppHeader() {
 
   const navLinks = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/contacts", label: "Contacts", icon: BookUser },
     { href: "/devices", label: "Device Settings", icon: Smartphone },
     { href: "/settings", label: "Account Settings", icon: Settings },
   ];
@@ -79,24 +80,14 @@ export function AppHeader() {
                 <DropdownMenuLabel>{user?.displayName ?? 'My Account'}</DropdownMenuLabel>
                  <DropdownMenuLabel className="font-normal text-xs text-muted-foreground">{user?.email}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/dashboard">
-                    <LayoutDashboard className="mr-2 h-4 w-4" />
-                    <span>Dashboard</span>
-                  </Link>
-                </DropdownMenuItem>
-                 <DropdownMenuItem asChild>
-                  <Link href="/devices">
-                    <Smartphone className="mr-2 h-4 w-4" />
-                    <span>Device Settings</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/settings">
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Account Settings</span>
-                  </Link>
-                </DropdownMenuItem>
+                 {navLinks.map(link => (
+                   <DropdownMenuItem key={link.href} asChild>
+                     <Link href={link.href}>
+                       <link.icon className="mr-2 h-4 w-4" />
+                       <span>{link.label}</span>
+                     </Link>
+                   </DropdownMenuItem>
+                 ))}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => auth.signOut()}>
                     <LogOut className="mr-2 h-4 w-4" />
