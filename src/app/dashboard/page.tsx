@@ -202,7 +202,7 @@ function EmergencyContacts() {
     }
   };
 
-  const isLoading = loading || userLoading || contactsLoading;
+  const isLoading = userLoading || contactsLoading || groupsLoading;
 
   return (
     <Card className="rounded-2xl shadow-lg h-full border-green-500/30">
@@ -521,3 +521,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    
