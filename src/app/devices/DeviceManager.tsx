@@ -375,7 +375,7 @@ export default function DeviceManager() {
                     Register Device
                 </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-lg">
                 <DialogHeader>
                     <DialogTitle>{editingDevice ? 'Edit Device' : 'Register New Device'}</DialogTitle>
                     <DialogDescription>
