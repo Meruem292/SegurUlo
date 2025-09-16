@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   AlertTriangle,
   Heart,
@@ -12,8 +12,9 @@ import {
   WifiOff,
   Tag,
   Loader2,
+  Settings2,
 } from 'lucide-react';
-import { ref, push, remove, query, onValue } from 'firebase/database';
+import { ref, push, remove, query, onValue, set } from 'firebase/database';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useList } from 'react-firebase-hooks/database';
 
@@ -62,22 +63,37 @@ interface Contact {
   tags?: string[];
 }
 
-const availableTags = ['Family', 'Close Friend', 'Friend'];
+interface TagInfo {
+  key: string;
+  name: string;
+}
+
+const defaultTags = ['Family', 'Close Friend', 'Friend'];
 
 function EmergencyContacts() {
   const [user, userLoading] = useAuthState(auth);
   const [isAddDialogOpen, setAddDialogOpen] = useState(false);
+  const [isGroupsDialogOpen, setGroupsDialogOpen] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const { toast } = useToast();
-
+  
   const contactsQuery = user ? query(ref(db, `users/${user.uid}/contacts`)) : null;
-  const [snapshots, loading] = useList(contactsQuery);
-
+  const [contactsSnapshots, contactsLoading] = useList(contactsQuery);
   const contacts: Contact[] =
-    snapshots?.map(snapshot => ({
+    contactsSnapshots?.map(snapshot => ({
       key: snapshot.key as string,
       ...snapshot.val(),
     })) || [];
+
+  const groupsQuery = user ? query(ref(db, `users/${user.uid}/groups`)) : null;
+  const [groupsSnapshots, groupsLoading] = useList(groupsQuery);
+  const customGroups: TagInfo[] =
+    groupsSnapshots?.map(snapshot => ({
+      key: snapshot.key as string,
+      ...snapshot.val(),
+    })) || [];
+
+  const availableTags = useMemo(() => [...defaultTags, ...customGroups.map(g => g.name)], [customGroups]);
 
   const handleAddContact = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -103,8 +119,7 @@ function EmergencyContacts() {
           phone,
           tags: selectedTags,
         });
-        setAddDialogOpen(false);
-        // Form will be reset via onOpenChange handler of the dialog
+        handleOpenChange(false);
         toast({
           title: 'Contact Added',
           description: `${name} has been added to your emergency contacts.`,
@@ -116,6 +131,38 @@ function EmergencyContacts() {
           variant: 'destructive',
         });
       }
+    }
+  };
+
+  const handleAddGroup = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!user) return;
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const groupName = formData.get('groupName') as string;
+    
+    if (groupName && !availableTags.includes(groupName)) {
+      try {
+        const userGroupsRef = ref(db, `users/${user.uid}/groups`);
+        await push(userGroupsRef, { name: groupName });
+        toast({ title: 'Group Added', description: `The group "${groupName}" has been created.` });
+        form.reset();
+      } catch (error) {
+        toast({ title: 'Error', description: 'Could not add group.', variant: 'destructive' });
+      }
+    } else if (availableTags.includes(groupName)) {
+       toast({ title: 'Group Exists', description: `The group "${groupName}" already exists.`, variant: 'destructive' });
+    }
+  };
+  
+  const handleRemoveGroup = async (key: string) => {
+    if (!user) return;
+    try {
+      await remove(ref(db, `users/${user.uid}/groups/${key}`));
+      toast({ title: 'Group Removed', variant: 'destructive' });
+    } catch (error) {
+       toast({ title: 'Error', description: 'Could not remove group.', variant: 'destructive' });
     }
   };
 
@@ -149,27 +196,66 @@ function EmergencyContacts() {
   const handleOpenChange = (isOpen: boolean) => {
     setAddDialogOpen(isOpen);
     if (!isOpen) {
-      // Reset form state when dialog closes
       const form = document.getElementById('add-contact-form') as HTMLFormElement;
       form?.reset();
       setSelectedTags([]);
     }
   };
 
+  const isLoading = loading || userLoading || contactsLoading;
+
   return (
     <Card className="rounded-2xl shadow-lg h-full border-green-500/30">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-green-500">
-          <Heart className="h-5 w-5" />
-          Emergency Contacts
-        </CardTitle>
-        <CardDescription>
-          These contacts will be notified in an emergency.
-        </CardDescription>
+        <div className="flex justify-between items-start">
+            <div>
+                 <CardTitle className="flex items-center gap-2 text-green-500">
+                    <Heart className="h-5 w-5" />
+                    Emergency Contacts
+                </CardTitle>
+                <CardDescription>
+                    These contacts will be notified in an emergency.
+                </CardDescription>
+            </div>
+            <Dialog open={isGroupsDialogOpen} onOpenChange={setGroupsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="ghost" size="icon" disabled={!user}>
+                  <Settings2 className="h-5 w-5" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                 <DialogHeader>
+                  <DialogTitle>Manage Contact Groups</DialogTitle>
+                  <DialogDescription>Add or remove custom contact groups.</DialogDescription>
+                </DialogHeader>
+                 <form onSubmit={handleAddGroup} className="flex items-center gap-2">
+                  <Input name="groupName" placeholder="New group name" required />
+                  <Button type="submit"><PlusCircle className="h-4 w-4" /></Button>
+                </form>
+                <div className="mt-4 space-y-2">
+                  <h4 className="font-medium">Custom Groups</h4>
+                  {groupsLoading ? (
+                     <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : customGroups.length > 0 ? (
+                     customGroups.map(group => (
+                        <div key={group.key} className="flex items-center justify-between rounded-md bg-muted p-2">
+                          <span>{group.name}</span>
+                           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleRemoveGroup(group.key)}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                     ))
+                  ) : (
+                    <p className="text-sm text-muted-foreground">No custom groups yet.</p>
+                  )}
+                </div>
+              </DialogContent>
+            </Dialog>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {loading || userLoading ? (
+          {isLoading ? (
             <div className="flex justify-center items-center py-4">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
             </div>
@@ -276,6 +362,7 @@ function EmergencyContacts() {
                     Tags
                   </Label>
                    <div className="col-span-3 grid gap-2">
+                     {groupsLoading &&  <Loader2 className="h-4 w-4 animate-spin" />}
                     {availableTags.map((tag) => (
                       <div key={tag} className="flex items-center gap-2">
                         <Checkbox 

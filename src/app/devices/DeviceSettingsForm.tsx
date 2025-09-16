@@ -39,7 +39,6 @@ import { Slider } from '@/components/ui/slider';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Smartphone, Save, User, Users } from 'lucide-react';
 import { auth, db } from '@/lib/firebase';
-import { Badge } from '@/components/ui/badge';
 
 const formSchema = z.object({
   deviceId: z.string().min(1, 'Device ID is required.'),
@@ -49,12 +48,20 @@ const formSchema = z.object({
 });
 
 type DeviceSettingsFormValues = z.infer<typeof formSchema>;
+
 interface Contact {
   key: string;
   name: string;
   phone: string;
   tags?: string[];
 }
+
+interface TagInfo {
+  key: string;
+  name: string;
+}
+
+const defaultTags = ['Family', 'Close Friend', 'Friend'];
 
 export default function DeviceSettingsForm() {
   const { toast } = useToast();
@@ -78,6 +85,16 @@ export default function DeviceSettingsForm() {
       ...snapshot.val(),
     })) || [], [contactSnapshots]);
 
+  const groupsQuery = user ? ref(db, `users/${user.uid}/groups`) : null;
+  const [groupsSnapshots, groupsLoading] = useList(groupsQuery);
+  const customGroups: TagInfo[] =
+    groupsSnapshots?.map(snapshot => ({
+      key: snapshot.key as string,
+      ...snapshot.val(),
+    })) || [];
+  
+  const availableTags = useMemo(() => [...defaultTags, ...customGroups.map(g => g.name)], [customGroups]);
+
   const alertContactTag = form.watch('alertContactTag');
 
   const filteredContacts = useMemo(() => {
@@ -86,7 +103,6 @@ export default function DeviceSettingsForm() {
     }
     return allContacts.filter(contact => contact.tags?.includes(alertContactTag));
   }, [allContacts, alertContactTag]);
-
 
   useEffect(() => {
     if (user) {
@@ -228,13 +244,14 @@ export default function DeviceSettingsForm() {
                     </FormControl>
                     <SelectContent>
                       <SelectItem value="all">All Emergency Contacts</SelectItem>
-                      <SelectItem value="Family">Family</SelectItem>
-                      <SelectItem value="Close Friend">Close Friends</SelectItem>
-                      <SelectItem value="Friend">Friend</SelectItem>
+                      {availableTags.map(tag => (
+                        <SelectItem key={tag} value={tag}>{tag}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormDescription>
                     Select which group of emergency contacts should receive alerts.
+                    {groupsLoading && <Loader2 className="inline-block ml-2 h-4 w-4 animate-spin" />}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -285,5 +302,3 @@ export default function DeviceSettingsForm() {
     </Card>
   );
 }
-
-    
