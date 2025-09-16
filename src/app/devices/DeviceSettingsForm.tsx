@@ -1,12 +1,13 @@
 
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { ref, set, onValue } from 'firebase/database';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { useList } from 'react-firebase-hooks/database';
 
 import {
   Card,
@@ -36,8 +37,9 @@ import {
 } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Smartphone, Save } from 'lucide-react';
+import { Loader2, Smartphone, Save, User, Users } from 'lucide-react';
 import { auth, db } from '@/lib/firebase';
+import { Badge } from '@/components/ui/badge';
 
 const formSchema = z.object({
   deviceId: z.string().min(1, 'Device ID is required.'),
@@ -47,6 +49,12 @@ const formSchema = z.object({
 });
 
 type DeviceSettingsFormValues = z.infer<typeof formSchema>;
+interface Contact {
+  key: string;
+  name: string;
+  phone: string;
+  tags?: string[];
+}
 
 export default function DeviceSettingsForm() {
   const { toast } = useToast();
@@ -61,16 +69,35 @@ export default function DeviceSettingsForm() {
       alertContactTag: 'all',
     },
   });
+  
+  const contactsQuery = user ? ref(db, `users/${user.uid}/contacts`) : null;
+  const [contactSnapshots, contactsLoading] = useList(contactsQuery);
+  const allContacts: Contact[] = useMemo(() =>
+    contactSnapshots?.map(snapshot => ({
+      key: snapshot.key as string,
+      ...snapshot.val(),
+    })) || [], [contactSnapshots]);
+
+  const alertContactTag = form.watch('alertContactTag');
+
+  const filteredContacts = useMemo(() => {
+    if (!alertContactTag || alertContactTag === 'all') {
+      return allContacts;
+    }
+    return allContacts.filter(contact => contact.tags?.includes(alertContactTag));
+  }, [allContacts, alertContactTag]);
+
 
   useEffect(() => {
     if (user) {
       const settingsRef = ref(db, `users/${user.uid}/deviceSettings`);
-      onValue(settingsRef, (snapshot) => {
+      const unsubscribe = onValue(settingsRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
           form.reset(data);
         }
       });
+      return () => unsubscribe();
     }
   }, [user, form]);
 
@@ -175,7 +202,7 @@ export default function DeviceSettingsForm() {
                                 max={60}
                                 step={5}
                                 value={[field.value]}
-                                onValue-change={(value) => field.onChange(value[0])}
+                                onValueChange={(value) => field.onChange(value[0])}
                             />
                              <span className="w-12 text-center font-mono text-lg">{field.value}</span>
                         </div>
@@ -213,6 +240,35 @@ export default function DeviceSettingsForm() {
                 </FormItem>
               )}
             />
+            
+            <div className="space-y-4 rounded-lg border bg-muted/50 p-4">
+              <h4 className="flex items-center font-semibold">
+                <Users className="mr-2 h-5 w-5" />
+                Contacts in Selected Group ({filteredContacts.length})
+              </h4>
+              {contactsLoading ? (
+                 <div className="flex justify-center items-center py-4">
+                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                </div>
+              ) : filteredContacts.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {filteredContacts.map(contact => (
+                    <div key={contact.key} className="flex items-center gap-3 rounded-md bg-background p-3 shadow-sm">
+                        <User className="h-5 w-5 text-muted-foreground" />
+                        <div>
+                            <p className="font-medium text-sm">{contact.name}</p>
+                            <p className="text-xs text-muted-foreground">{contact.phone}</p>
+                        </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-center text-sm text-muted-foreground py-4">
+                  No contacts found with the selected tag.
+                </p>
+              )}
+            </div>
+
           </CardContent>
           <CardFooter>
             <Button type="submit" disabled={isSubmitting || loading || !user}>

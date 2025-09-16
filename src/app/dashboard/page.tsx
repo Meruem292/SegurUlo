@@ -104,8 +104,7 @@ function EmergencyContacts() {
           tags: selectedTags,
         });
         setAddDialogOpen(false);
-        form.reset();
-        setSelectedTags([]);
+        // Form will be reset via onOpenChange handler of the dialog
         toast({
           title: 'Contact Added',
           description: `${name} has been added to your emergency contacts.`,
@@ -145,6 +144,16 @@ function EmergencyContacts() {
     setSelectedTags(prev => 
       checked ? [...prev, tag] : prev.filter(t => t !== tag)
     );
+  };
+  
+  const handleOpenChange = (isOpen: boolean) => {
+    setAddDialogOpen(isOpen);
+    if (!isOpen) {
+      // Reset form state when dialog closes
+      const form = document.getElementById('add-contact-form') as HTMLFormElement;
+      form?.reset();
+      setSelectedTags([]);
+    }
   };
 
   return (
@@ -220,12 +229,7 @@ function EmergencyContacts() {
             </p>
           )}
         </div>
-        <Dialog open={isAddDialogOpen} onOpenChange={(isOpen) => {
-          setAddDialogOpen(isOpen);
-          if (!isOpen) {
-            setSelectedTags([]);
-          }
-        }}>
+        <Dialog open={isAddDialogOpen} onOpenChange={handleOpenChange}>
           <DialogTrigger asChild>
             <Button
               className="mt-6 w-full bg-green-500 text-white hover:bg-green-500/90"
@@ -242,7 +246,7 @@ function EmergencyContacts() {
                 Enter the name and phone number of your new contact.
               </DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleAddContact}>
+            <form id="add-contact-form" onSubmit={handleAddContact}>
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="name" className="text-right">
