@@ -70,7 +70,7 @@ function EmergencyContacts() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const { toast } = useToast();
 
-  const contactsQuery = user ? ref(db, `users/${user.uid}/contacts`) : null;
+  const contactsQuery = user ? query(ref(db, `users/${user.uid}/contacts`)) : null;
   const [snapshots, loading] = useList(contactsQuery);
 
   const contacts: Contact[] =
@@ -434,5 +434,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    
