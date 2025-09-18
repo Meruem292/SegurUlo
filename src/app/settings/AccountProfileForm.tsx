@@ -25,6 +25,8 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { User, updateEmail, updatePassword, updateProfile } from 'firebase/auth';
+import { ref, update } from 'firebase/database';
+import { db } from '@/lib/firebase';
 
 const formSchema = z
   .object({
@@ -64,15 +66,26 @@ export default function AccountProfileForm({ user }: AccountProfileFormProps) {
 
   const onSubmit = async (data: ProfileFormValues) => {
     try {
+        const updates: any = {};
+        
         if(data.name && data.name !== user.displayName) {
             await updateProfile(user, { displayName: data.name });
+            updates.name = data.name;
         }
         if(data.email && data.email !== user.email) {
             await updateEmail(user, data.email);
+            updates.email = data.email;
         }
         if (data.password) {
             await updatePassword(user, data.password);
         }
+
+        // Update Realtime Database if there are any changes
+        if(Object.keys(updates).length > 0) {
+            const userRef = ref(db, `users/${user.uid}`);
+            await update(userRef, updates);
+        }
+
         toast({
             title: 'Profile Updated',
             description: 'Your account information has been successfully updated.',

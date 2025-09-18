@@ -1,10 +1,12 @@
+
 "use client";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
+import { ref, set } from "firebase/database";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -35,7 +37,16 @@ export default function SignupPage() {
 
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(userCredential.user, { displayName: fullName });
+      const user = userCredential.user;
+      
+      // Update profile in Firebase Auth
+      await updateProfile(user, { displayName: fullName });
+
+      // Save user info to Realtime Database
+      await set(ref(db, 'users/' + user.uid), {
+        name: fullName,
+        email: email,
+      });
       
       toast({
         title: "Account Created",
