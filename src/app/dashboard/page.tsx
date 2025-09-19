@@ -44,7 +44,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { auth, db } from '@/lib/firebase';
-import PersonalizationForm from '../settings/PersonalizationForm';
+import RouteSuggester from '../settings/RouteSuggester';
 
 interface Contact {
   key: string;
@@ -249,7 +249,7 @@ export default function DashboardPage() {
                 <HelmetStatus />
                 <EmergencyAlert />
               </div>
-              <PersonalizationForm />
+              <RouteSuggester />
             </div>
             <div className="row-span-2">
               <EmergencyContacts />
