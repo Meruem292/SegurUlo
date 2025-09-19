@@ -65,13 +65,6 @@ function LandingPageHeader() {
               >
                 Location
               </Link>
-              <Link
-                href="#testimonials"
-                className={cn("text-sm font-medium hover:underline transition-colors", isScrolled ? 'text-foreground' : 'text-white')}
-                prefetch={false}
-              >
-                Testimonials
-              </Link>
             </nav>
             <div className="flex items-center gap-4">
               <ThemeSwitcher />
@@ -171,102 +164,6 @@ export default function Home() {
                <LocationFinder />
             </div>
         </section>
-        <section id="testimonials" className="py-20 md:py-32 bg-muted/30">
-          <div className="container mx-auto px-4 md:px-6">
-            <div className="mx-auto max-w-4xl text-center">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
-                Loved by Riders Everywhere
-              </h2>
-              <p className="mt-4 text-lg text-muted-foreground">
-                Don't just take our word for it. Here's what our users have to
-                say.
-              </p>
-            </div>
-            <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-              <Card className="rounded-2xl">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Star className="w-5 h-5 fill-accent stroke-accent" />
-                    <Star className="w-5 h-5 fill-accent stroke-accent" />
-                    <Star className="w-5 h-5 fill-accent stroke-accent" />
-                    <Star className="w-5 h-5 fill-accent stroke-accent" />
-                    <Star className="w-5 h-5 fill-accent stroke-accent" />
-                  </div>
-                  <p className="text-muted-foreground">
-                    "The peace of mind SegurUlo gives me is priceless. My family
-                    feels better knowing I'm protected by the emergency alert
-                    system."
-                  </p>
-                  <div className="mt-4 flex items-center gap-4">
-                    <Avatar>
-                      <AvatarFallback>JD</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="font-semibold">Jane Doe</p>
-                      <p className="text-sm text-muted-foreground">
-                        Daily Commuter
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="rounded-2xl">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Star className="w-5 h-5 fill-accent stroke-accent" />
-                    <Star className="w-5 h-5 fill-accent stroke-accent" />
-                    <Star className="w-5 h-5 fill-accent stroke-accent" />
-                    <Star className="w-5 h-5 fill-accent stroke-accent" />
-                    <Star className="w-5 h-5 fill-accent stroke-accent" />
-                  </div>
-                  <p className="text-muted-foreground">
-                    "I love the personalized settings. The AI figured out the
-                    perfect ventilation for my long weekend rides. It's a game
-                    changer!"
-                  </p>
-                  <div className="mt-4 flex items-center gap-4">
-                    <Avatar>
-                      <AvatarFallback>MS</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="font-semibold">Mike Smith</p>
-                      <p className="text-sm text-muted-foreground">
-                        Mountain Biker
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="rounded-2xl">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Star className="w-5 h-5 fill-accent stroke-accent" />
-                    <Star className="w-5 h-5 fill-accent stroke-accent" />
-                    <Star className="w-5 h-5 fill-accent stroke-accent" />
-                    <Star className="w-5 h-5 fill-accent stroke-accent" />
-                    <Star className="w-5 h-5 fill-accent stroke-accent" />
-                  </div>
-                  <p className="text-muted-foreground">
-                    "Sleek design, comfortable fit, and top-notch technology.
-                    SegurUlo is the best helmet I've ever owned. Highly
-                    recommend!"
-                  </p>
-                  <div className="mt-4 flex items-center gap-4">
-                    <Avatar>
-                      <AvatarFallback>CF</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="font-semibold">Carlos Fernandez</p>
-                      <p className="text-sm text-muted-foreground">
-                        Road Cyclist
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
       </main>
       <footer className="bg-muted/30">
         <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 py-8 md:flex-row md:px-6">
@@ -298,5 +195,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
