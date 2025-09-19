@@ -1,8 +1,9 @@
+
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { User, LogOut, Settings, LayoutDashboard, Smartphone, BookUser } from "lucide-react";
+import { User, LogOut, Settings, LayoutDashboard, Smartphone, BookUser, MapPin } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -27,6 +28,7 @@ export function AppHeader() {
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/contacts", label: "Contacts", icon: BookUser },
     { href: "/devices", label: "Device Settings", icon: Smartphone },
+    { href: "/location", label: "Location", icon: MapPin },
     { href: "/settings", label: "Account Settings", icon: Settings },
   ];
 
