@@ -277,7 +277,7 @@ export default function RouteSuggester() {
                 <CardHeader className="p-0">
                     <div className="aspect-video relative w-full">
                     <Image
-                        src={`https://picsum.photos/seed/${route.name}/600/400`}
+                        src={`https://picsum.photos/seed/${route.imageKeywords}/600/400`}
                         alt={route.name}
                         fill
                         style={{ objectFit: 'cover' }}
