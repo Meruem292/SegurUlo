@@ -14,8 +14,8 @@ import {
 import {
   getRouteSuggestions,
   type RouteSuggestionsOutput,
+  type RouteSuggestion,
 } from '@/ai/flows/route-suggestions';
-import { generateImage } from '@/ai/flows/generate-image';
 import {
   Card,
   CardContent,
@@ -45,11 +45,6 @@ const disciplines = [
   'Downhill (steep, descending mountain biking)',
 ];
 
-type RouteSuggestion = RouteSuggestionsOutput['routes'][number];
-interface RouteSuggestionWithImage extends RouteSuggestion {
-  imageUrl?: string;
-}
-
 export default function RouteSuggester() {
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
@@ -61,7 +56,7 @@ export default function RouteSuggester() {
   const [selectedTerrains, setSelectedTerrains] = useState<string[]>([]);
   const [selectedDisciplines, setSelectedDisciplines] = useState<string[]>([]);
   const [suggestions, setSuggestions] = useState<
-    RouteSuggestionWithImage[]
+    RouteSuggestion[]
   >([]);
 
   const handleCheckboxChange = (
@@ -131,24 +126,7 @@ export default function RouteSuggester() {
           disciplines: selectedDisciplines,
         });
         
-        // Set suggestions without images first for a faster UI update
-        const initialSuggestions = result.routes.map(route => ({...route, imageUrl: undefined}));
-        setSuggestions(initialSuggestions);
-
-        // Fetch images one by one
-        for (const [index, route] of result.routes.entries()) {
-            try {
-                const imageResult = await generateImage({ prompt: route.imagePrompt });
-                setSuggestions(prev => {
-                    const newSuggestions = [...prev];
-                    newSuggestions[index].imageUrl = imageResult.imageUrl;
-                    return newSuggestions;
-                });
-            } catch (imageError) {
-                 console.error(`Failed to generate image for "${route.name}":`, imageError);
-                 // Optionally update the UI to show a placeholder for the failed image
-            }
-        }
+        setSuggestions(result.routes);
         
       } catch (error) {
         console.error('Failed to get route suggestions:', error);
@@ -290,20 +268,15 @@ export default function RouteSuggester() {
           {suggestions.map((route, index) => (
             <Card key={index} className="rounded-2xl shadow-lg overflow-hidden animate-in fade-in-50 duration-500">
                 <CardHeader className="p-0">
-                  {route.imageUrl ? (
-                     <div className="aspect-video relative w-full">
-                        <Image
-                            src={route.imageUrl}
-                            alt={route.name}
-                            fill
-                            style={{ objectFit: 'cover' }}
-                        />
-                     </div>
-                  ) : (
-                    <div className="aspect-video w-full bg-muted flex items-center justify-center">
-                        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                    <div className="aspect-video relative w-full">
+                    <Image
+                        src={`https://picsum.photos/seed/${route.name}/600/400`}
+                        alt={route.name}
+                        fill
+                        style={{ objectFit: 'cover' }}
+                        data-ai-hint={route.imageKeywords}
+                    />
                     </div>
-                  )}
                 </CardHeader>
                 <CardContent className="p-6">
                     <CardTitle>{route.name}</CardTitle>

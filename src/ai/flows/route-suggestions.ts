@@ -9,7 +9,7 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+import { z } from 'zod';
 
 const RouteSuggestionsInputSchema = z.object({
   latitude: z.number().describe("The user's current latitude."),
@@ -25,19 +25,20 @@ const RouteSuggestionsInputSchema = z.object({
 });
 export type RouteSuggestionsInput = z.infer<typeof RouteSuggestionsInputSchema>;
 
-const RouteSuggestionSchema = z.object({
+export const RouteSuggestionSchema = z.object({
   name: z.string().describe('A catchy and descriptive name for the route.'),
   description: z
     .string()
     .describe(
       'A detailed description of the route, highlighting its key features and why it matches the user\'s preferences.'
     ),
-  imagePrompt: z
+  imageKeywords: z
     .string()
     .describe(
-      'A DALL-E prompt to generate a visually appealing and representative image of the route.'
+      'One or two keywords representing the route for a placeholder image (e.g., "mountain trail", "coastal road").'
     ),
 });
+export type RouteSuggestion = z.infer<typeof RouteSuggestionSchema>;
 
 const RouteSuggestionsOutputSchema = z.object({
   routes: z
@@ -71,7 +72,7 @@ User Preferences:
 For each route, provide:
 1.  A catchy, descriptive name.
 2.  A detailed description highlighting why it's a great choice based on the user's preferences (mentioning terrain, difficulty, scenery, etc.).
-3.  A concise, powerful prompt for an image generation model (like DALL-E) to create a stunning, realistic photo of the route. The prompt should be in the format: "A cinematic shot of [description]".
+3.  One or two keywords that best describe the route for finding a stock photo (e.g., "mountain trail", "coastal road", "city park").
 
 For example:
 - If the user chooses 'Gravel' and 'Bikepacking', suggest scenic dirt paths, mentioning their suitability for multi-day trips.
