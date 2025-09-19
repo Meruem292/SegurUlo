@@ -100,7 +100,7 @@ const deviceFormSchema = z.object({
 
 type DeviceFormValues = z.infer<typeof deviceFormSchema>;
 
-function DeviceForm({ device, onSave }: { device?: Device | null, onSave: () => void }) {
+function DeviceForm({ device, onSave, devices }: { device?: Device | null, onSave: () => void, devices: Device[] }) {
     const [user] = useAuthState(auth);
     const { toast } = useToast();
 
@@ -172,6 +172,15 @@ function DeviceForm({ device, onSave }: { device?: Device | null, onSave: () => 
                 toast({ title: 'Device Updated', description: `Device ${data.deviceId} has been updated.` });
             } else {
                 // Create
+                const isDuplicate = devices.some(d => d.deviceId === data.deviceId);
+                if (isDuplicate) {
+                    toast({
+                        title: 'Device Exists',
+                        description: `A device with the ID "${data.deviceId}" is already registered.`,
+                        variant: 'destructive',
+                    });
+                    return;
+                }
                 const userDevicesRef = ref(db, `users/${user.uid}/devices`);
                 await push(userDevicesRef, data);
                 toast({ title: 'Device Added', description: `Device ${data.deviceId} has been registered.` });
@@ -192,7 +201,7 @@ function DeviceForm({ device, onSave }: { device?: Device | null, onSave: () => 
                         <FormItem>
                         <FormLabel>Device ID</FormLabel>
                         <FormControl>
-                            <Input placeholder="Enter the ID found on your device" {...field} />
+                            <Input placeholder="Enter the ID found on your device" {...field} disabled={!!device} />
                         </FormControl>
                         <FormMessage />
                         </FormItem>
@@ -385,7 +394,7 @@ export default function DeviceManager() {
                     </DialogDescription>
                 </DialogHeader>
                 <div className="pr-6">
-                 <DeviceForm device={editingDevice} onSave={() => setFormOpen(false)} />
+                 <DeviceForm device={editingDevice} onSave={() => setFormOpen(false)} devices={devices} />
                 </div>
               </ScrollArea>
             </DialogContent>
