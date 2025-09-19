@@ -78,7 +78,7 @@ const defaultTags = ['Family', 'Close Friend', 'Friend'];
 
 const contactFormSchema = z.object({
   name: z.string().min(2, 'Name is required.'),
-  phone: z.string().min(10, 'A valid phone number is required.'),
+  phone: z.string().regex(/^09\d{9}$/, 'Phone number must be in the format 09123456789.'),
   tags: z.array(z.string()).optional(),
 });
 
@@ -286,7 +286,7 @@ export default function ContactsManager() {
                                 <FormItem>
                                 <Label>Phone Number</Label>
                                 <FormControl>
-                                    <Input type="tel" placeholder="e.g. (555) 123-4567" {...field} />
+                                    <Input type="tel" placeholder="09123456789" {...field} />
                                 </FormControl>
                                 <FormMessage />
                                 </FormItem>
