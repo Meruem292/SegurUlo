@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { User, LogOut, Settings, LayoutDashboard, Smartphone, BookUser, MapPin } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -19,10 +19,19 @@ import { cn } from "@/lib/utils";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/lib/firebase";
+import { useToast } from "@/hooks/use-toast";
 
 export function AppHeader() {
   const pathname = usePathname();
+  const router = useRouter();
   const [user] = useAuthState(auth);
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    await auth.signOut();
+    toast({ title: 'Logged Out', description: 'You have been successfully logged out.' });
+    router.push('/');
+  };
 
   const navLinks = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -59,11 +68,11 @@ export function AppHeader() {
         </div>
         <div className="flex items-center gap-4">
             <ThemeSwitcher />
-            <nav className="flex md:hidden items-center gap-2">
+            <nav className="flex md:hidden items-center gap-1">
                  {navLinks.map((link) => (
                     <Button key={link.href} variant={pathname === link.href ? "secondary" : "ghost"} size="icon" asChild>
                         <Link href={link.href} >
-                            <link.icon className="h-4 w-4" />
+                            <link.icon className="h-5 w-5" />
                             <span className="sr-only">{link.label}</span>
                         </Link>
                     </Button>
@@ -91,7 +100,7 @@ export function AppHeader() {
                    </DropdownMenuItem>
                  ))}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => auth.signOut()}>
+                <DropdownMenuItem onClick={handleLogout}>
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                 </DropdownMenuItem>

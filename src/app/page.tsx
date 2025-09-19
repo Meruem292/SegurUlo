@@ -66,14 +66,16 @@ function LandingPageHeader() {
                 Location
               </Link>
             </nav>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               <ThemeSwitcher />
-              <Button variant="outline" className={cn(isScrolled ? '' : 'bg-transparent text-white hover:bg-white hover:text-black')} asChild>
-                <Link href="/login">Log In</Link>
-              </Button>
-              <Button asChild className="bg-white text-black hover:bg-white/90">
-                <Link href="/signup">Sign Up</Link>
-              </Button>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Button variant="outline" className={cn("w-full sm:w-auto", isScrolled ? '' : 'bg-transparent text-white hover:bg-white hover:text-black')} asChild>
+                  <Link href="/login">Log In</Link>
+                </Button>
+                <Button asChild className="bg-white text-black hover:bg-white/90 w-full sm:w-auto">
+                  <Link href="/signup">Sign Up</Link>
+                </Button>
+              </div>
             </div>
         </div>
     </header>

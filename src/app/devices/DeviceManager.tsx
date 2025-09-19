@@ -263,7 +263,7 @@ function DeviceForm({ device, onSave, devices }: { device?: Device | null, onSav
                             <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                         </div>
                     ) : filteredContacts.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 gap-3">
                         {filteredContacts.map(contact => (
                             <div key={contact.key} className="flex items-center gap-3 rounded-md bg-background p-3 shadow-sm">
                                 <User className="h-5 w-5 text-muted-foreground" />
