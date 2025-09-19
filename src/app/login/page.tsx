@@ -50,7 +50,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen w-full items-center justify-center bg-background p-2">
       <div className="absolute top-4 right-4">
         <ThemeSwitcher />
       </div>
@@ -103,7 +103,7 @@ export default function LoginPage() {
                     className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 text-muted-foreground"
                     onClick={() => setShowPassword(!showPassword)}
                   >
-                    {showPassword ? <EyeOff /> : <Eye />}
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     <span className="sr-only">
                       {showPassword ? 'Hide password' : 'Show password'}
                     </span>

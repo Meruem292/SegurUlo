@@ -78,7 +78,7 @@ function EmergencyContacts() {
                 A quick look at your emergency contacts.
             </CardDescription>
         </div>
-        <Button asChild variant="outline">
+        <Button asChild variant="outline" className="flex-shrink-0">
             <Link href="/contacts">
                 <BookUser className="mr-2 h-4 w-4" />
                 Manage Contacts
@@ -128,7 +128,7 @@ export default function DashboardPage() {
   return (
     <div className="flex min-h-screen w-full flex-col">
       <AppHeader />
-      <main className="flex-1 bg-muted/20 p-4 sm:p-6 md:p-8">
+      <main className="flex-1 bg-muted/20 p-2 sm:p-6 md:p-8">
         <div className="container mx-auto max-w-7xl">
           <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
