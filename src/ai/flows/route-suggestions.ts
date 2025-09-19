@@ -12,8 +12,8 @@ import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
 const RouteSuggestionsInputSchema = z.object({
-  latitude: z.number().describe('The user\'s current latitude.'),
-  longitude: z.number().describe('The user\'s current longitude.'),
+  latitude: z.number().describe("The user's current latitude."),
+  longitude: z.number().describe("The user's current longitude."),
   terrains: z
     .array(z.string())
     .describe('An array of preferred terrains (e.g., Road, Gravel).'),
@@ -25,7 +25,7 @@ const RouteSuggestionsInputSchema = z.object({
 });
 export type RouteSuggestionsInput = z.infer<typeof RouteSuggestionsInputSchema>;
 
-export const RouteSuggestionSchema = z.object({
+const RouteSuggestionSchema = z.object({
   name: z.string().describe('A catchy and descriptive name for the route.'),
   description: z
     .string()
