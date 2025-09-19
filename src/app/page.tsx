@@ -99,7 +99,7 @@ function LocationFinder() {
     const [lat, long] = coordinates.split(',').map(c => c.trim());
     
     if (lat && long && !isNaN(Number(lat)) && !isNaN(Number(long))) {
-      const embedUrl = `https://www.google.com/maps/embed/v1/view?key=${process.env.NEXT_PUBLIC_FIREBASE_API_KEY}&center=${lat},${long}&zoom=15`;
+      const embedUrl = `https://maps.google.com/maps?q=${lat},${long}&hl=es;z=14&output=embed`;
       setMapSrc(embedUrl);
     } else {
       toast({
