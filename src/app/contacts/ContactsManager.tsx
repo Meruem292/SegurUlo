@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -353,10 +354,10 @@ export default function ContactsManager() {
               {contacts.map(contact => (
               <div
                 key={contact.key}
-                className="flex items-center justify-between p-4 hover:bg-muted/50"
+                className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 hover:bg-muted/50"
               >
-                <div className="flex items-center gap-4">
-                    <div className="bg-primary/10 text-primary p-3 rounded-full">
+                <div className="flex items-center gap-4 flex-1">
+                    <div className="bg-primary/10 text-primary p-3 rounded-full hidden sm:flex">
                         <Users className="h-5 w-5" />
                     </div>
                     <div>
@@ -374,7 +375,7 @@ export default function ContactsManager() {
                         </div>
                     </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 self-end sm:self-center">
                     <Button variant="ghost" size="icon" onClick={() => setEditingContact(contact)}>
                         <Pencil className="h-4 w-4" />
                     </Button>
@@ -422,3 +423,5 @@ export default function ContactsManager() {
     </Card>
   );
 }
+
+    
