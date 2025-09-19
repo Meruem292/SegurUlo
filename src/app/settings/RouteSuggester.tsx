@@ -48,7 +48,8 @@ const disciplines = [
 type RouteSuggestion = {
   name: string;
   description: string;
-  imageKeywords: string;
+  latitude: number;
+  longitude: number;
 };
 
 
@@ -254,7 +255,7 @@ export default function RouteSuggester() {
             {[...Array(2)].map((_, i) => (
                 <Card key={i} className="rounded-2xl shadow-lg">
                     <CardHeader>
-                        <Skeleton className="h-28 w-full rounded-lg" />
+                        <Skeleton className="h-40 w-full rounded-lg" />
                     </CardHeader>
                     <CardContent>
                         <Skeleton className="h-6 w-3/4 mb-4" />
@@ -275,14 +276,16 @@ export default function RouteSuggester() {
           {suggestions.map((route, index) => (
             <Card key={index} className="rounded-2xl shadow-lg overflow-hidden animate-in fade-in-50 duration-500">
                 <CardHeader className="p-0">
-                    <div className="aspect-video relative w-full">
-                    <Image
-                        src={`https://picsum.photos/seed/${route.imageKeywords}/600/400`}
-                        alt={route.name}
-                        fill
-                        style={{ objectFit: 'cover' }}
-                        data-ai-hint={route.imageKeywords}
-                    />
+                    <div className="aspect-video w-full overflow-hidden">
+                        <iframe
+                            src={`https://maps.google.com/maps?q=${route.latitude},${route.longitude}&hl=es;z=14&t=k&output=embed`}
+                            width="100%"
+                            height="100%"
+                            style={{ border: 0 }}
+                            allowFullScreen
+                            loading="lazy"
+                            referrerPolicy="no-referrer-when-downgrade"
+                        ></iframe>
                     </div>
                 </CardHeader>
                 <CardContent className="p-6">

@@ -32,11 +32,8 @@ const RouteSuggestionSchema = z.object({
     .describe(
       'A detailed description of the route, highlighting its key features and why it matches the user\'s preferences.'
     ),
-  imageKeywords: z
-    .string()
-    .describe(
-      'One or two keywords representing the route for a placeholder image (e.g., "mountain trail", "coastal road").'
-    ),
+  latitude: z.number().describe('A representative latitude for the route.'),
+  longitude: z.number().describe('A representative longitude for the route.'),
 });
 
 const RouteSuggestionsOutputSchema = z.object({
@@ -71,7 +68,7 @@ User Preferences:
 For each route, provide:
 1.  A catchy, descriptive name.
 2.  A detailed description highlighting why it's a great choice based on the user's preferences (mentioning terrain, difficulty, scenery, etc.).
-3.  One or two keywords that best describe the route for finding a stock photo (e.g., "mountain trail", "coastal road", "city park").
+3.  A representative latitude and longitude for the suggested route area.
 
 For example:
 - If the user chooses 'Gravel' and 'Bikepacking', suggest scenic dirt paths, mentioning their suitability for multi-day trips.
