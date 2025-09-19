@@ -337,8 +337,8 @@ export default function DeviceManager() {
   
   return (
     <Card className="rounded-2xl shadow-lg">
-       <CardHeader className="flex flex-row items-start justify-between">
-        <div>
+       <CardHeader className="flex flex-col sm:flex-row items-start justify-between gap-4">
+        <div className='flex-1'>
           <CardTitle className="flex items-center gap-2">
             <Smartphone className="h-6 w-6" />
             Registered Devices
@@ -349,7 +349,7 @@ export default function DeviceManager() {
         </div>
         <Dialog open={isFormOpen} onOpenChange={handleDialogClose}>
             <DialogTrigger asChild>
-                <Button disabled={!user} onClick={handleAddNewClick} className="bg-primary hover:bg-primary/90">
+                <Button disabled={!user} onClick={handleAddNewClick} className="bg-primary hover:bg-primary/90 flex-shrink-0">
                     <PlusCircle className="mr-2 h-4 w-4" />
                     Register Device
                 </Button>

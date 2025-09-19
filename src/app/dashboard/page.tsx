@@ -68,24 +68,22 @@ function EmergencyContacts() {
 
   return (
     <Card className="rounded-2xl shadow-lg h-full border-green-500/30">
-      <CardHeader>
-        <div className="flex justify-between items-start">
-            <div>
-                 <CardTitle className="flex items-center gap-2 text-green-500">
-                    <Heart className="h-5 w-5" />
-                    Emergency Contacts
-                </CardTitle>
-                <CardDescription>
-                    A quick look at your emergency contacts.
-                </CardDescription>
-            </div>
-            <Button asChild variant="outline">
-                <Link href="/contacts">
-                    <BookUser className="mr-2 h-4 w-4" />
-                    Manage Contacts
-                </Link>
-            </Button>
+      <CardHeader className="flex flex-col sm:flex-row items-start justify-between gap-4">
+        <div className='flex-1'>
+             <CardTitle className="flex items-center gap-2 text-green-500">
+                <Heart className="h-5 w-5" />
+                Emergency Contacts
+            </CardTitle>
+            <CardDescription>
+                A quick look at your emergency contacts.
+            </CardDescription>
         </div>
+        <Button asChild variant="outline">
+            <Link href="/contacts">
+                <BookUser className="mr-2 h-4 w-4" />
+                Manage Contacts
+            </Link>
+        </Button>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">

@@ -36,9 +36,9 @@ export function AppHeader() {
   const navLinks = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/contacts", label: "Contacts", icon: BookUser },
-    { href: "/devices", label: "Device Settings", icon: Smartphone },
+    { href: "/devices", label: "Devices", icon: Smartphone },
     { href: "/location", label: "Location", icon: MapPin },
-    { href: "/settings", label: "Account Settings", icon: Settings },
+    { href: "/settings", label: "Settings", icon: Settings },
   ];
 
   return (

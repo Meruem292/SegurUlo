@@ -204,8 +204,8 @@ export default function ContactsManager() {
   
   return (
     <Card className="rounded-2xl shadow-lg">
-       <CardHeader className="flex flex-row items-start justify-between">
-        <div>
+       <CardHeader className="flex flex-col sm:flex-row items-start justify-between gap-4">
+        <div className='flex-1'>
           <CardTitle className="flex items-center gap-2">
             <BookUser className="h-6 w-6" />
             Emergency Contacts
@@ -214,7 +214,7 @@ export default function ContactsManager() {
             Add, edit, and organize the contacts to be notified in an emergency.
           </CardDescription>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Dialog open={isGroupsDialogOpen} onOpenChange={setGroupsDialogOpen}>
               <DialogTrigger asChild>
                 <Button variant="outline" disabled={!user}>
