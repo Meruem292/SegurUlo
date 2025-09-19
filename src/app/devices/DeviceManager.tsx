@@ -73,7 +73,6 @@ interface Device {
   key: string;
   deviceId: string;
   gpsSmsInterval: number;
-  gpsWebInterval: number;
   alertContactTag: string;
 }
 
@@ -94,7 +93,6 @@ const defaultTags = ['Family', 'Close Friend', 'Friend'];
 const deviceFormSchema = z.object({
   deviceId: z.string().min(1, 'Device ID is required.'),
   gpsSmsInterval: z.number().min(0).max(60),
-  gpsWebInterval: z.number().min(0).max(60),
   alertContactTag: z.string().optional(),
 });
 
@@ -128,12 +126,10 @@ function DeviceForm({ device, onSave, devices }: { device?: Device | null, onSav
         defaultValues: device ? {
             deviceId: device.deviceId,
             gpsSmsInterval: device.gpsSmsInterval,
-            gpsWebInterval: device.gpsWebInterval,
             alertContactTag: device.alertContactTag || 'all',
         } : {
             deviceId: '',
             gpsSmsInterval: 15,
-            gpsWebInterval: 5,
             alertContactTag: 'all',
         },
     });
@@ -152,12 +148,10 @@ function DeviceForm({ device, onSave, devices }: { device?: Device | null, onSav
         form.reset(device ? {
             deviceId: device.deviceId,
             gpsSmsInterval: device.gpsSmsInterval,
-            gpsWebInterval: device.gpsWebInterval,
             alertContactTag: device.alertContactTag || 'all',
         } : {
             deviceId: '',
             gpsSmsInterval: 15,
-            gpsWebInterval: 5,
             alertContactTag: 'all',
         });
     }, [device, form]);
@@ -212,7 +206,7 @@ function DeviceForm({ device, onSave, devices }: { device?: Device | null, onSav
                     name="gpsSmsInterval"
                     render={({ field }) => (
                         <FormItem>
-                        <FormLabel>Periodic GPS SMS Interval (minutes)</FormLabel>
+                        <FormLabel>Periodic GPS SMS Interval (seconds)</FormLabel>
                         <FormControl>
                             <div className="flex items-center gap-4">
                                 <Slider
@@ -226,32 +220,7 @@ function DeviceForm({ device, onSave, devices }: { device?: Device | null, onSav
                             </div>
                         </FormControl>
                         <FormDescription>
-                            Time between automatic GPS location updates via SMS. 0 to disable.
-                        </FormDescription>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="gpsWebInterval"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Periodic GPS Web Record Interval (minutes)</FormLabel>
-                        <FormControl>
-                            <div className="flex items-center gap-4">
-                                <Slider
-                                    min={0}
-                                    max={60}
-                                    step={5}
-                                    value={[field.value]}
-                                    onValueChange={(value) => field.onChange(value[0])}
-                                />
-                                <span className="w-12 text-center font-mono text-lg">{field.value}</span>
-                            </div>
-                        </FormControl>
-                        <FormDescription>
-                            Time between automatic GPS location records to the web service. 0 to disable.
+                            Time between automatic GPS location updates via SMS when EMERGENCY.
                         </FormDescription>
                         <FormMessage />
                         </FormItem>
