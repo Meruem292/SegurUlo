@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview AI-powered route suggestions for cyclists.
@@ -24,7 +25,7 @@ const RouteSuggestionsInputSchema = z.object({
 });
 export type RouteSuggestionsInput = z.infer<typeof RouteSuggestionsInputSchema>;
 
-const RouteSuggestionSchema = z.object({
+export const RouteSuggestionSchema = z.object({
   name: z.string().describe('A catchy and descriptive name for the route.'),
   description: z
     .string()

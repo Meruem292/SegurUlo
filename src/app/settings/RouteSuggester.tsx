@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useTransition } from 'react';
@@ -12,7 +13,7 @@ import {
 } from 'lucide-react';
 import {
   getRouteSuggestions,
-  RouteSuggestionsOutput,
+  RouteSuggestionSchema,
 } from '@/ai/flows/route-suggestions';
 import { generateImage } from '@/ai/flows/generate-image';
 import {
@@ -28,6 +29,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
+import { z } from 'zod';
 
 const terrains = [
   'Road',
@@ -44,7 +46,8 @@ const disciplines = [
   'Downhill (steep, descending mountain biking)',
 ];
 
-interface RouteSuggestionWithImage extends RouteSuggestionsOutput['routes'][0] {
+type RouteSuggestion = z.infer<typeof RouteSuggestionSchema>;
+interface RouteSuggestionWithImage extends RouteSuggestion {
   imageUrl?: string;
 }
 
