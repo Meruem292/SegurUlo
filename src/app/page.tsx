@@ -10,15 +10,19 @@ import {
   Star,
   Zap,
   Cog,
+  MapPin,
 } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Logo } from '@/components/icons';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { cn } from '@/lib/utils';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 
 function LandingPageHeader() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -57,6 +61,13 @@ function LandingPageHeader() {
                 Features
               </Link>
               <Link
+                href="#location"
+                className={cn("text-sm font-medium hover:underline transition-colors", isScrolled ? 'text-foreground' : 'text-white')}
+                prefetch={false}
+              >
+                Location
+              </Link>
+              <Link
                 href="#testimonials"
                 className={cn("text-sm font-medium hover:underline transition-colors", isScrolled ? 'text-foreground' : 'text-white')}
                 prefetch={false}
@@ -78,6 +89,69 @@ function LandingPageHeader() {
   );
 }
 
+function LocationFinder() {
+  const [coordinates, setCoordinates] = useState('');
+  const [mapSrc, setMapSrc] = useState('');
+  const { toast } = useToast();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const [lat, long] = coordinates.split(',').map(c => c.trim());
+    
+    if (lat && long && !isNaN(Number(lat)) && !isNaN(Number(long))) {
+      const embedUrl = `https://www.google.com/maps/embed/v1/view?key=${process.env.NEXT_PUBLIC_FIREBASE_API_KEY}&center=${lat},${long}&zoom=15`;
+      setMapSrc(embedUrl);
+    } else {
+      toast({
+        title: 'Invalid Coordinates',
+        description: 'Please enter coordinates in the format "latitude, longitude".',
+        variant: 'destructive',
+      });
+    }
+  };
+  
+  return (
+    <Card className="rounded-2xl shadow-lg">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+            <MapPin className="h-6 w-6 text-primary" />
+            Find a Location
+        </CardTitle>
+        <CardDescription>
+            Enter latitude and longitude to display the location on the map.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSearch} className="flex flex-col sm:flex-row items-end gap-4 mb-6">
+            <div className="w-full">
+              <Label htmlFor="coordinates">Coordinates (lat, long)</Label>
+              <Input
+                  id="coordinates"
+                  type="text"
+                  placeholder="e.g., 14.310614, 120.962985"
+                  value={coordinates}
+                  onChange={(e) => setCoordinates(e.target.value)}
+              />
+            </div>
+            <Button type="submit" className="w-full sm:w-auto">Search</Button>
+        </form>
+        {mapSrc && (
+            <div className="aspect-video w-full overflow-hidden rounded-lg border">
+                <iframe
+                    src={mapSrc}
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                ></iframe>
+            </div>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
 
 export default function Home() {
   return (
@@ -158,7 +232,12 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <section id="testimonials" className="py-20 md:py-32">
+        <section id="location" className="py-20 md:py-32">
+            <div className="container mx-auto max-w-4xl px-4 md:px-6">
+               <LocationFinder />
+            </div>
+        </section>
+        <section id="testimonials" className="py-20 md:py-32 bg-muted/30">
           <div className="container mx-auto px-4 md:px-6">
             <div className="mx-auto max-w-4xl text-center">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
@@ -285,3 +364,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
