@@ -14,7 +14,6 @@ import {
 import {
   getRouteSuggestions,
   type RouteSuggestionsOutput,
-  type RouteSuggestion,
 } from '@/ai/flows/route-suggestions';
 import {
   Card,
@@ -44,6 +43,14 @@ const disciplines = [
   'Cross-country (XC – endurance trail riding)',
   'Downhill (steep, descending mountain biking)',
 ];
+
+// Define the type for a single route suggestion locally.
+type RouteSuggestion = {
+  name: string;
+  description: string;
+  imageKeywords: string;
+};
+
 
 export default function RouteSuggester() {
   const { toast } = useToast();

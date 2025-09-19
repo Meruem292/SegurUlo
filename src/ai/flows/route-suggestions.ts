@@ -25,7 +25,7 @@ const RouteSuggestionsInputSchema = z.object({
 });
 export type RouteSuggestionsInput = z.infer<typeof RouteSuggestionsInputSchema>;
 
-export const RouteSuggestionSchema = z.object({
+const RouteSuggestionSchema = z.object({
   name: z.string().describe('A catchy and descriptive name for the route.'),
   description: z
     .string()
@@ -38,7 +38,6 @@ export const RouteSuggestionSchema = z.object({
       'One or two keywords representing the route for a placeholder image (e.g., "mountain trail", "coastal road").'
     ),
 });
-export type RouteSuggestion = z.infer<typeof RouteSuggestionSchema>;
 
 const RouteSuggestionsOutputSchema = z.object({
   routes: z
