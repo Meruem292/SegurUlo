@@ -10,6 +10,7 @@ import {
   Map,
   Mountain,
   MapPin,
+  Clock,
 } from 'lucide-react';
 import {
   getRouteSuggestions,
@@ -50,6 +51,7 @@ type RouteSuggestion = {
   description: string;
   latitude: number;
   longitude: number;
+  estimatedTime: string;
 };
 
 
@@ -290,6 +292,10 @@ export default function RouteSuggester() {
                 </CardHeader>
                 <CardContent className="p-6">
                     <CardTitle>{route.name}</CardTitle>
+                    <div className="flex items-center text-sm text-muted-foreground mt-2">
+                        <Clock className="h-4 w-4 mr-2" />
+                        <span>{route.estimatedTime}</span>
+                    </div>
                     <CardDescription className="mt-4 whitespace-pre-wrap">{route.description}</CardDescription>
                 </CardContent>
             </Card>

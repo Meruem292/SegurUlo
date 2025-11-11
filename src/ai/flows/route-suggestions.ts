@@ -34,6 +34,11 @@ const RouteSuggestionSchema = z.object({
     ),
   latitude: z.number().describe('A representative latitude for the route.'),
   longitude: z.number().describe('A representative longitude for the route.'),
+  estimatedTime: z
+    .string()
+    .describe(
+      'An estimated time to complete the route on a bicycle (e.g., "Approx. 2 hours").'
+    ),
 });
 
 const RouteSuggestionsOutputSchema = z.object({
@@ -69,10 +74,11 @@ For each route, provide:
 1.  A catchy, descriptive name.
 2.  A detailed description highlighting why it's a great choice based on the user's preferences (mentioning terrain, difficulty, scenery, etc.).
 3.  A representative latitude and longitude for the suggested route area.
+4.  An estimated time to complete the route on a bicycle, based on average cycling speed for the described terrain and difficulty.
 
 For example:
-- If the user chooses 'Gravel' and 'Bikepacking', suggest scenic dirt paths, mentioning their suitability for multi-day trips.
-- If the user chooses 'Downhill', focus on steep, technical, trail-heavy areas.
+- If the user chooses 'Gravel' and 'Bikepacking', suggest scenic dirt paths, mentioning their suitability for multi-day trips and estimate the time per day.
+- If the user chooses 'Downhill', focus on steep, technical, trail-heavy areas and provide an estimated time for a single run or a few runs.
 
 Generate a diverse set of recommendations.
 `,
