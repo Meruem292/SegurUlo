@@ -132,11 +132,11 @@ export default function DashboardPage() {
         <div className="container mx-auto max-w-7xl">
           <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-1">
+              <EmergencyContacts />
+            </div>
             <div className="lg:col-span-2">
               <RouteSuggester />
-            </div>
-            <div className="row-span-2">
-              <EmergencyContacts />
             </div>
           </div>
         </div>
