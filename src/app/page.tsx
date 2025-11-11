@@ -5,18 +5,12 @@ import Link from 'next/link';
 import Image from 'next/image';
 import {
   ShieldCheck,
-  HeartPulse,
-  Smartphone,
-  Star,
-  Zap,
   Cog,
-  MapPin,
+  Smartphone,
 } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Logo } from '@/components/icons';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { cn } from '@/lib/utils';
@@ -66,12 +60,12 @@ function LandingPageHeader() {
                 Location
               </Link>
             </nav>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-end gap-2 flex-1 sm:flex-initial">
                 <ThemeSwitcher />
-                <Button variant="outline" className={cn("w-full sm:w-auto", isScrolled ? '' : 'bg-transparent text-white hover:bg-white hover:text-black')} asChild>
+                <Button variant="outline" className={cn("w-full max-w-[100px] sm:w-auto", isScrolled ? '' : 'bg-transparent text-white hover:bg-white hover:text-black')} asChild>
                   <Link href="/login">Log In</Link>
                 </Button>
-                <Button asChild className="bg-white text-black hover:bg-white/90 w-full sm:w-auto hidden sm:flex">
+                <Button asChild className="bg-white text-black hover:bg-white/90 w-full max-w-[100px] sm:w-auto hidden sm:flex">
                   <Link href="/signup">Sign Up</Link>
                 </Button>
             </div>
